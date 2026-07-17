@@ -1,5 +1,6 @@
-import { ListFilter, Plus } from "lucide-react";
-import type { Effect, EffectCategory, Icon } from "@/types/editor";
+import { Search } from "lucide-react";
+import { useMemo, useState } from "react";
+import type { Effect, EffectCategory } from "@/types/editor";
 import { EffectCard } from "./effect-card";
 import { EffectTabs } from "./effect-tabs";
 
@@ -18,6 +19,15 @@ export function EffectsBrowser({
   setActiveCategory,
   setSelectedEffect,
 }: EffectsBrowserProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const visibleEffects = useMemo(
+    () =>
+      effects.filter((effect) =>
+        effect.name.toLowerCase().includes(searchTerm.trim().toLowerCase()),
+      ),
+    [effects, searchTerm],
+  );
+
   return (
     <section className="rounded-[10px] border border-[var(--border)] bg-[var(--surface)]">
       <div className="flex flex-col gap-3 border-b border-[var(--border-subtle)] px-4 py-3 md:flex-row md:items-center md:justify-between">
@@ -29,15 +39,15 @@ export function EffectsBrowser({
             Browser and presets
           </h2>
         </div>
-        <div className="flex items-center gap-2">
-          <IconButton icon={ListFilter} label="Filter effects" />
-          <button
-            className="flex h-9 items-center gap-2 rounded-[7px] border border-[var(--border)] px-3 text-xs text-[var(--text-secondary)] transition hover:border-[var(--accent)] hover:text-white"
-            type="button"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            Add layer
-          </button>
+        <div className="relative w-full md:w-64">
+          <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-[var(--text-muted)]" />
+          <input
+            className="h-9 w-full rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] pl-9 pr-3 text-sm text-white outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]"
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder="Search effects"
+            type="search"
+            value={searchTerm}
+          />
         </div>
       </div>
 
@@ -47,7 +57,7 @@ export function EffectsBrowser({
       />
 
       <div className="grid gap-3 p-4 md:grid-cols-2 xl:grid-cols-3">
-        {effects.map((effect) => (
+        {visibleEffects.map((effect) => (
           <EffectCard
             effect={effect}
             key={effect.id}
@@ -57,18 +67,5 @@ export function EffectsBrowser({
         ))}
       </div>
     </section>
-  );
-}
-
-function IconButton({ icon: IconComponent, label }: { icon: Icon; label: string }) {
-  return (
-    <button
-      aria-label={label}
-      className="flex h-9 w-9 items-center justify-center rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] text-[var(--text-secondary)] transition hover:border-[var(--accent)] hover:text-white"
-      title={label}
-      type="button"
-    >
-      <IconComponent className="h-4 w-4" />
-    </button>
   );
 }

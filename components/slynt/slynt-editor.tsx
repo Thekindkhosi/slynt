@@ -12,7 +12,18 @@ export function SlyntEditor() {
   const [activeCategory, setActiveCategory] =
     useState<EffectCategory>("background");
   const [selectedBackground, setSelectedBackground] = useState("nebula");
-  const [selectedVisualizer, setSelectedVisualizer] = useState("spectrum");
+  const [selectedVisualizer, setSelectedVisualizer] = useState("spectrum-bars");
+  const [selectedByCategory, setSelectedByCategory] = useState<
+    Record<EffectCategory, string>
+  >({
+    background: "nebula",
+    "audio-reactives": "spectrum-bars",
+    "track-progress": "minimal-line",
+    playlist: "playlist-hidden",
+    cover: "cover-hidden",
+    text: "track-title",
+    logo: "logo-hidden",
+  });
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(67);
   const [duration] = useState(204);
@@ -69,19 +80,22 @@ export function SlyntEditor() {
             <EffectsBrowser
               activeCategory={activeCategory}
               effects={filteredEffects}
-              selectedEffectId={
-                activeCategory === "background"
-                  ? selectedBackground
-                  : selectedVisualizer
-              }
+              selectedEffectId={selectedByCategory[activeCategory]}
               setActiveCategory={setActiveCategory}
               setSelectedEffect={(effect) => {
+                setSelectedByCategory((current) => ({
+                  ...current,
+                  [effect.category]: effect.id,
+                }));
+
                 if (effect.category === "background") {
                   setSelectedBackground(effect.id);
                   return;
                 }
 
-                setSelectedVisualizer(effect.id);
+                if (effect.category === "audio-reactives") {
+                  setSelectedVisualizer(effect.id);
+                }
               }}
             />
           </div>
