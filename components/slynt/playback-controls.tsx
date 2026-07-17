@@ -74,7 +74,7 @@ export function PlaybackControls({
   }, [duration, isPlaying, setCurrentTime, setIsPlaying]);
 
   return (
-    <div className="flex w-full flex-col gap-2 rounded-[8px] border border-white/10 bg-black/45 p-2.5 backdrop-blur-sm">
+    <div className="flex w-full flex-col gap-2 rounded-[8px] border border-white/10 bg-[#050506]/70 p-2.5 backdrop-blur-sm">
       <div className="flex items-center gap-2">
         <IconButton
           icon={StepBack}
@@ -163,7 +163,7 @@ function IconButton({
   return (
     <button
       aria-label={label}
-      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[7px] border border-white/10 bg-black/35 text-zinc-300 transition hover:border-[var(--accent)] hover:text-white"
+      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[7px] border border-white/10 bg-[#050506]/55 text-zinc-300 transition hover:border-[var(--accent)] hover:text-white"
       onClick={onClick}
       title={label}
       type="button"

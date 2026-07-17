@@ -26,7 +26,7 @@ export function ToggleControl({
       />
       <span
         aria-hidden="true"
-        className="relative h-5 w-9 rounded-full border border-[var(--border)] bg-black transition"
+        className="relative h-5 w-9 rounded-full border border-[var(--border)] bg-[#050506] transition"
       >
         <span
           className="absolute top-1/2 h-3.5 w-3.5 -translate-y-1/2 rounded-full bg-[var(--text-muted)] transition"

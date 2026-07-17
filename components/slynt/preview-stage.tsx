@@ -29,7 +29,7 @@ export function PreviewStage({
   return (
     <section className="overflow-hidden rounded-[10px] border border-[var(--border)] bg-[var(--surface)]">
       <div className="p-3 sm:p-4">
-        <div className="relative aspect-video overflow-hidden rounded-[10px] border border-[var(--border-subtle)] bg-black">
+        <div className="relative aspect-video overflow-hidden rounded-[10px] border border-[var(--border-subtle)] bg-[#050506]">
           <CanvasVisualizer
             controlValues={controlValues}
             isPlaying={isPlaying}
@@ -52,10 +52,10 @@ export function PreviewStage({
 
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <div className="translate-y-1 text-center">
-              <p className="text-3xl font-semibold tracking-[0.34em] text-white sm:text-5xl">
+              <p className="text-[26px] font-semibold leading-none tracking-[0.34em] text-white sm:text-[34px]">
                 SLYNT
               </p>
-              <p className="mt-3 text-[11px] font-semibold tracking-[0.24em] text-[var(--accent)] sm:text-sm">
+              <p className="mt-3 text-[11px] font-semibold tracking-[0.24em] text-[var(--accent)] sm:text-[12px]">
                 FEEL THE FREQUENCY
               </p>
             </div>
