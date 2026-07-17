@@ -1,24 +1,45 @@
-type RangeControlProps = {
+interface RangeControlProps {
   label: string;
-  onChange: (value: number) => void;
   value: number;
-};
+  min?: number;
+  max?: number;
+  step?: number;
+  suffix?: string;
+  onChange: (value: number) => void;
+}
 
-export function RangeControl({ label, onChange, value }: RangeControlProps) {
+export function RangeControl({
+  label,
+  max = 100,
+  min = 0,
+  onChange,
+  step = 1,
+  suffix = "%",
+  value,
+}: RangeControlProps) {
+  const inputId = `range-${label.toLowerCase().replace(/\s+/g, "-")}`;
+
   return (
-    <label className="mb-4 block last:mb-0">
+    <div className="mb-4 last:mb-0">
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-xs text-[var(--text-secondary)]">{label}</span>
-        <span className="font-mono text-xs text-white">{value}%</span>
+        <label className="text-xs text-[var(--text-secondary)]" htmlFor={inputId}>
+          {label}
+        </label>
+        <span className="font-mono text-xs text-white">
+          {value}
+          {suffix}
+        </span>
       </div>
       <input
         className="slynt-range w-full"
-        max="100"
-        min="0"
+        id={inputId}
+        max={max}
+        min={min}
         onChange={(event) => onChange(Number(event.target.value))}
+        step={step}
         type="range"
         value={value}
       />
-    </label>
+    </div>
   );
 }

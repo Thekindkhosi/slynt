@@ -13,7 +13,6 @@ import {
   RotateCcw,
   SlidersHorizontal,
   Type,
-  Zap,
   Diamond,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
@@ -329,10 +328,9 @@ function AudioReactiveControls({
 
       <div className="mt-4">
         <ToggleControl
-          active={controlValues.glowEnabled}
-          icon={Zap}
+          checked={controlValues.glowEnabled}
           label="Glow"
-          onClick={() => updateValue("glowEnabled", !controlValues.glowEnabled)}
+          onCheckedChange={(checked) => updateValue("glowEnabled", checked)}
         />
       </div>
       <div className="mt-4">

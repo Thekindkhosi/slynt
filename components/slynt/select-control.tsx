@@ -1,11 +1,11 @@
 import { ChevronDown } from "lucide-react";
 
-type SelectControlProps = {
+interface SelectControlProps {
   label: string;
-  onChange: (value: string) => void;
-  options: string[];
   value: string;
-};
+  options: string[];
+  onChange: (value: string) => void;
+}
 
 export function SelectControl({
   label,
@@ -13,14 +13,20 @@ export function SelectControl({
   options,
   value,
 }: SelectControlProps) {
+  const selectId = `select-${label.toLowerCase().replace(/\s+/g, "-")}`;
+
   return (
     <div>
-      <label className="mb-2 block text-xs text-[var(--text-muted)]">
+      <label
+        className="mb-2 block text-xs text-[var(--text-muted)]"
+        htmlFor={selectId}
+      >
         {label}
       </label>
       <div className="relative">
         <select
           className="h-10 w-full appearance-none rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] px-3 text-sm text-white outline-none transition focus:border-[var(--accent)]"
+          id={selectId}
           onChange={(event) => onChange(event.target.value)}
           value={value}
         >
