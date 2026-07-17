@@ -4,10 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { effects } from "@/data/effects";
 import type {
   AudioTrack,
-  ControlValues,
   EffectCategory,
   ExportValues,
-  SceneValues,
 } from "@/types/editor";
 import { ControlSidebar } from "./control-sidebar";
 import { EffectsBrowser } from "./effects-browser";
@@ -18,7 +16,6 @@ import { TopNavigation } from "./top-navigation";
 export function SlyntEditor() {
   const [activeCategory, setActiveCategory] =
     useState<EffectCategory>("background");
-  const [selectedVisualizer, setSelectedVisualizer] = useState("spectrum-bars");
   const [selectedByCategory, setSelectedByCategory] = useState<
     Record<EffectCategory, string>
   >({
@@ -35,46 +32,13 @@ export function SlyntEditor() {
   const [duration, setDuration] = useState(204);
   const [volume, setVolume] = useState(70);
   const [audioTrack, setAudioTrack] = useState<AudioTrack | null>(null);
-  const [controlValues, setControlValues] = useState<ControlValues>({
-    intensity: 75,
-    sensitivity: 65,
-    barHeight: 80,
-    speed: 58,
-    smoothing: 70,
-    density: 60,
-    glowEnabled: true,
-    glowIntensity: 60,
-    glowBlur: 28,
-  });
-  const [exportValues, setExportValues] = useState<ExportValues>({
+  const [exportValues] = useState<ExportValues>({
     resolution: "1280 × 720 (HD)",
     frameRate: "30 FPS",
     aspectRatio: "16:9",
     videoFormat: "MP4",
     quality: "High",
   });
-  const [sceneValues, setSceneValues] = useState<SceneValues>({
-    backgroundBrightness: 52,
-    cameraMovement: 18,
-    motionAmount: 58,
-    particleDensity: 42,
-    sceneBlur: 12,
-  });
-  const [transparent, setTransparent] = useState(false);
-
-  const selectedEffect = useMemo(
-    () =>
-      effects.find((effect) => effect.id === selectedVisualizer) ?? effects[0],
-    [selectedVisualizer],
-  );
-
-  const inspectedEffect = useMemo(
-    () =>
-      effects.find((effect) => effect.id === selectedByCategory[activeCategory]) ??
-      selectedEffect,
-    [activeCategory, selectedByCategory, selectedEffect],
-  );
-
   const filteredEffects = useMemo(
     () => effects.filter((effect) => effect.category === activeCategory),
     [activeCategory],
@@ -135,34 +99,11 @@ export function SlyntEditor() {
                   ...current,
                   [effect.category]: effect.id,
                 }));
-
-                if (effect.category === "audio-reactives") {
-                  setSelectedVisualizer(effect.id);
-                }
               }}
             />
           </div>
 
-          <ControlSidebar
-            activeCategory={activeCategory}
-            controlValues={controlValues}
-            effect={inspectedEffect}
-            exportValues={exportValues}
-            sceneValues={sceneValues}
-            setControlValues={setControlValues}
-            setExportValues={setExportValues}
-            setSceneValues={setSceneValues}
-            selectedVisualizer={selectedVisualizer}
-            setSelectedVisualizer={(id) => {
-              setSelectedVisualizer(id);
-              setSelectedByCategory((current) => ({
-                ...current,
-                "audio-reactives": id,
-              }));
-            }}
-            setTransparent={setTransparent}
-            transparent={transparent}
-          />
+          <ControlSidebar />
         </section>
       </div>
     </main>
