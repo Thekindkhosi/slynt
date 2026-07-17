@@ -30,7 +30,7 @@ export function EffectsBrowser({
 
   return (
     <section className="rounded-[10px] border border-[var(--border)] bg-[var(--surface)]">
-      <div className="flex flex-col gap-3 border-b border-[var(--border-subtle)] px-4 py-3 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-3 border-b border-[var(--border-subtle)] px-3 py-3 sm:px-4 md:flex-row md:items-center md:justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">
             Effects
@@ -39,10 +39,10 @@ export function EffectsBrowser({
             Browser and presets
           </h2>
         </div>
-        <div className="relative w-full md:w-64">
+        <div className="relative w-full md:w-56 xl:w-64">
           <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-[var(--text-muted)]" />
           <input
-            className="h-9 w-full rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] pl-9 pr-3 text-sm text-white outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]"
+            className="h-10 w-full rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] pl-9 pr-3 text-[13px] text-white outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]"
             onChange={(event) => setSearchTerm(event.target.value)}
             placeholder="Search effects"
             type="search"
@@ -56,7 +56,7 @@ export function EffectsBrowser({
         setActiveCategory={setActiveCategory}
       />
 
-      <div className="grid gap-3 p-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 p-3 sm:p-4 md:grid-cols-2 xl:grid-cols-3">
         {visibleEffects.map((effect) => (
           <EffectCard
             effect={effect}

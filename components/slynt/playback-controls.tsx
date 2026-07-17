@@ -75,7 +75,7 @@ export function PlaybackControls({
 
   return (
     <div className="flex w-full flex-col gap-2 rounded-[8px] border border-white/10 bg-[#050506]/70 p-2.5 backdrop-blur-sm">
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <IconButton
           icon={StepBack}
           label="Previous"
@@ -83,7 +83,7 @@ export function PlaybackControls({
         />
         <button
           aria-label={isPlaying ? "Pause preview" : "Play preview"}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-black transition hover:bg-zinc-200"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-black transition hover:bg-zinc-200"
           onClick={() => setIsPlaying(!isPlaying)}
           type="button"
         >
@@ -101,13 +101,13 @@ export function PlaybackControls({
           }
         />
 
-        <span className="w-[74px] shrink-0 font-mono text-[11px] text-zinc-300 sm:w-[92px]">
+        <span className="min-h-10 w-[74px] shrink-0 content-center font-mono text-[11px] text-zinc-300 sm:w-[92px]">
           {formatTime(currentTime)} / {formatTime(duration)}
         </span>
 
         <input
           aria-label="Seek playback"
-          className="slynt-progress h-4 min-w-0 flex-1"
+          className="slynt-progress h-4 min-w-28 flex-1"
           max={duration}
           min="0"
           onChange={(event) => setCurrentTime(Number(event.target.value))}
@@ -120,7 +120,7 @@ export function PlaybackControls({
           <Volume2 className="h-4 w-4 text-zinc-400" />
           <input
             aria-label="Volume"
-            className="slynt-progress h-4 w-20"
+          className="slynt-progress h-4 w-20"
             max="100"
             min="0"
             onChange={(event) => setVolume(Number(event.target.value))}
@@ -163,7 +163,7 @@ function IconButton({
   return (
     <button
       aria-label={label}
-      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[7px] border border-white/10 bg-[#050506]/55 text-zinc-300 transition hover:border-[var(--accent)] hover:text-white"
+      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[7px] border border-white/10 bg-[#050506]/55 text-zinc-300 transition hover:border-[var(--accent)] hover:text-white"
       onClick={onClick}
       title={label}
       type="button"

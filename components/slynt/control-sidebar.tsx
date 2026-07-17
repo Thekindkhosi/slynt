@@ -450,7 +450,7 @@ function SidebarTab({
   return (
     <button
       className={cn(
-        "rounded-[7px] px-3 py-2 text-[11px] font-semibold tracking-[0.08em] transition",
+        "min-h-10 rounded-[7px] px-3 py-2 text-[11px] font-semibold tracking-[0.08em] transition",
         active
           ? "bg-[var(--surface-hover)] text-white"
           : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]",
@@ -467,7 +467,7 @@ function IconButton({ icon: IconComponent, label }: { icon: Icon; label: string 
   return (
     <button
       aria-label={label}
-      className="flex h-9 w-9 items-center justify-center rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] text-[var(--text-secondary)] transition hover:border-[var(--accent)] hover:text-white"
+      className="flex h-10 w-10 items-center justify-center rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] text-[var(--text-secondary)] transition hover:border-[var(--accent)] hover:text-white"
       title={label}
       type="button"
     >

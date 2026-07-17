@@ -16,7 +16,7 @@ export function EffectCard({
   return (
     <button
       className={cn(
-        "group relative rounded-[8px] border bg-[var(--surface-secondary)] p-2 text-left transition",
+        "group relative min-h-40 rounded-[8px] border bg-[var(--surface-secondary)] p-2 text-left transition",
         selected
           ? "border-[var(--accent)]"
           : "border-[var(--border-subtle)] hover:border-[var(--border)] hover:bg-[var(--surface-hover)]",
@@ -26,7 +26,7 @@ export function EffectCard({
     >
       <Thumbnail effect={effect} />
       <div className="mt-3 flex items-center justify-between gap-2 px-1 pb-1">
-        <span className="truncate text-sm font-medium text-white">
+        <span className="truncate text-[13px] font-medium text-white">
           {effect.name}
         </span>
         {selected ? (

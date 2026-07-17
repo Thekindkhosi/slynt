@@ -12,12 +12,12 @@ export function TopNavigation({ exportValues }: TopNavigationProps) {
   const [exportOpen, setExportOpen] = useState(false);
 
   return (
-    <header className="relative flex min-h-14 items-center justify-between gap-3 border-b border-[var(--border-subtle)]">
+    <header className="relative flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] py-1">
       <div className="flex items-center gap-3">
         <div className="flex h-8 w-8 items-center justify-center rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)]">
           <Waves className="h-4 w-4 text-[var(--accent)]" strokeWidth={2.2} />
         </div>
-        <h1 className="text-[22px] font-semibold leading-none tracking-[0.22em] text-white">
+        <h1 className="text-[22px] font-semibold leading-none tracking-[0.22em] text-white sm:text-[24px]">
           SLYNT
         </h1>
       </div>
@@ -25,17 +25,17 @@ export function TopNavigation({ exportValues }: TopNavigationProps) {
       <div className="relative">
         <button
           aria-expanded={exportOpen}
-          className="flex h-9 items-center gap-2 rounded-[7px] bg-[var(--accent)] px-3 text-[13px] font-semibold text-white transition hover:bg-[var(--accent-hover)]"
+          className="flex h-10 items-center gap-2 rounded-[7px] bg-[var(--accent)] px-3 text-[13px] font-semibold text-white transition hover:bg-[var(--accent-hover)]"
           onClick={() => setExportOpen((open) => !open)}
           type="button"
         >
           <Download className="h-3.5 w-3.5" />
-          <span>Export Video</span>
+          <span className="hidden sm:inline">Export Video</span>
           <ChevronDown className="h-3.5 w-3.5 opacity-80" />
         </button>
 
         {exportOpen ? (
-          <div className="absolute right-0 top-11 z-20 w-72 rounded-[8px] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-lg shadow-black/20">
+          <div className="absolute right-0 top-11 z-20 w-[calc(100vw-1.5rem)] rounded-[8px] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-lg shadow-black/20 sm:w-72">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">
               Export Summary
             </p>
