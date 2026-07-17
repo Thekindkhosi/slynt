@@ -69,7 +69,6 @@ export function SlyntEditor() {
             <PreviewStage
               currentTime={currentTime}
               duration={duration}
-              effect={selectedEffect}
               controlValues={controlValues}
               isPlaying={isPlaying}
               loop={loop}

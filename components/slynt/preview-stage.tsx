@@ -1,12 +1,10 @@
-import { Clock3, Maximize2 } from "lucide-react";
-import type { ControlValues, Effect, Icon } from "@/types/editor";
+import type { ControlValues } from "@/types/editor";
 import { CanvasVisualizer } from "./canvas-visualizer";
 import { PlaybackControls } from "./playback-controls";
 
 type PreviewStageProps = {
   currentTime: number;
   duration: number;
-  effect: Effect;
   controlValues: ControlValues;
   isPlaying: boolean;
   loop: boolean;
@@ -21,66 +19,52 @@ type PreviewStageProps = {
 export function PreviewStage({
   currentTime,
   duration,
-  effect,
   controlValues,
   isPlaying,
   loop,
   setIsPlaying,
   setLoop,
   setCurrentTime,
-  selectedBackground,
-  selectedVisualizer,
   volume,
 }: PreviewStageProps) {
   return (
     <section className="overflow-hidden rounded-[10px] border border-[var(--border)] bg-[var(--surface)]">
-      <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-4 py-3">
-        <div className="min-w-0">
-          <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">
-            Preview
-          </p>
-          <h2 className="truncate text-sm font-medium text-white">
-            Night Signal - Visualizer Master
-          </h2>
-        </div>
-        <div className="flex items-center gap-2">
-          <Pill icon={Clock3} text="03:42" />
-          <IconButton icon={Maximize2} label="Fullscreen" />
-        </div>
-      </div>
-
       <div className="p-3 sm:p-4">
         <div className="relative aspect-video overflow-hidden rounded-[10px] border border-[var(--border-subtle)] bg-black">
           <CanvasVisualizer
-            accent={effect.accent}
             density={controlValues.density}
             intensity={controlValues.intensity}
             isPlaying={isPlaying}
             speed={controlValues.speed}
           />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(139,92,246,0.11),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.03),transparent_18%,rgba(0,0,0,0.36))]" />
-          <div className="absolute left-4 top-4 flex items-center gap-2 rounded-[7px] border border-white/10 bg-black/50 px-2.5 py-1.5 text-xs text-[var(--text-secondary)]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" />
-            Live render
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.025),transparent_18%,rgba(0,0,0,0.28))]" />
+
+          <div className="absolute left-4 top-4 flex items-center gap-2">
+            <span className="rounded-[7px] border border-white/10 bg-black/45 px-2.5 py-1.5 font-mono text-[11px] text-zinc-300">
+              1280 × 720
+            </span>
+            <span className="rounded-[7px] border border-white/10 bg-black/45 px-2.5 py-1.5 font-mono text-[11px] text-zinc-300">
+              16:9
+            </span>
           </div>
-          <div className="absolute bottom-5 left-5 right-5">
-            <div className="mb-3 flex items-end justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
-                  Now shaping
-                </p>
-                <p className="mt-1 text-xl font-semibold text-white sm:text-3xl">
-                  {effect.name}
-                </p>
-                <p className="mt-1 text-xs text-zinc-500">
-                  {selectedBackground} / {selectedVisualizer}
-                </p>
-              </div>
-              <div className="hidden text-right sm:block">
-                <p className="text-xs text-zinc-500">Peak</p>
-                <p className="font-mono text-sm text-[var(--cyan)]">-3.1 dB</p>
-              </div>
+
+          <div className="absolute right-4 top-4 flex items-center gap-2 rounded-[7px] border border-white/10 bg-black/45 px-2.5 py-1.5 text-[11px] font-medium text-zinc-200">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" />
+            Preview
+          </div>
+
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="translate-y-1 text-center">
+              <p className="text-3xl font-semibold tracking-[0.34em] text-white sm:text-5xl">
+                SLYNT
+              </p>
+              <p className="mt-3 text-[11px] font-semibold tracking-[0.24em] text-[var(--accent)] sm:text-sm">
+                FEEL THE FREQUENCY
+              </p>
             </div>
+          </div>
+
+          <div className="absolute bottom-5 left-5 right-5">
             <Timeline
               currentTime={currentTime}
               duration={duration}
@@ -143,28 +127,6 @@ function formatTime(time: number) {
   const minutes = Math.floor(time / 60);
   const seconds = Math.floor(time % 60);
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-}
-
-function IconButton({ icon: IconComponent, label }: { icon: Icon; label: string }) {
-  return (
-    <button
-      aria-label={label}
-      className="flex h-9 w-9 items-center justify-center rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] text-[var(--text-secondary)] transition hover:border-[var(--accent)] hover:text-white"
-      title={label}
-      type="button"
-    >
-      <IconComponent className="h-4 w-4" />
-    </button>
-  );
-}
-
-function Pill({ icon: IconComponent, text }: { icon: Icon; text: string }) {
-  return (
-    <span className="hidden h-9 items-center gap-2 rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] px-3 text-xs text-[var(--text-secondary)] sm:flex">
-      <IconComponent className="h-3.5 w-3.5" />
-      {text}
-    </span>
-  );
 }
 
 function Meter({ label, value }: { label: string; value: string }) {
