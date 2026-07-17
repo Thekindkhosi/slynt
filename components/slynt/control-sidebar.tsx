@@ -114,7 +114,11 @@ export function ControlSidebar({
 
   return (
     <aside className="flex min-h-0 flex-col rounded-[10px] border border-[var(--border)] bg-[var(--surface)] lg:sticky lg:top-[84px] lg:max-h-[calc(100vh-100px)] lg:overflow-y-auto">
-      <div className="grid grid-cols-2 border-b border-[var(--border-subtle)] p-1">
+      <div
+        aria-label="Control sidebar panels"
+        className="grid grid-cols-2 border-b border-[var(--border-subtle)] p-1"
+        role="tablist"
+      >
         <SidebarTab
           active={activeTab === "effect"}
           label="EFFECT CONTROLS"
@@ -387,6 +391,7 @@ function VisualizerTypeButton({
           ? "border-[var(--accent)] bg-[var(--accent-soft)] text-white"
           : "border-[var(--border)] text-[var(--text-secondary)] hover:text-white",
       )}
+      aria-pressed={active}
       onClick={onClick}
       type="button"
     >
@@ -412,6 +417,7 @@ function CollapsibleSection({
   return (
     <section className="rounded-[8px] border border-[var(--border-subtle)] bg-[var(--surface-secondary)]">
       <button
+        aria-expanded={open}
         className="flex w-full items-center justify-between gap-3 px-3 py-3 text-left"
         onClick={onToggle}
         type="button"
@@ -449,6 +455,7 @@ function SidebarTab({
 }) {
   return (
     <button
+      aria-selected={active}
       className={cn(
         "min-h-10 rounded-[7px] px-3 py-2 text-[11px] font-semibold tracking-[0.08em] transition",
         active
@@ -456,6 +463,7 @@ function SidebarTab({
           : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]",
       )}
       onClick={onClick}
+      role="tab"
       type="button"
     >
       {label}

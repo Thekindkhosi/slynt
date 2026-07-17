@@ -31,6 +31,9 @@ export function CanvasVisualizer({
     let animationId = 0;
     let lastTime = performance.now();
     let elapsed = 0;
+    const reducedMotionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
@@ -56,7 +59,8 @@ export function CanvasVisualizer({
     const render = (time: number) => {
       const delta = Math.min(48, time - lastTime);
       lastTime = time;
-      elapsed += delta * (isPlaying ? 1 : 0.22);
+      const reducedMotion = reducedMotionQuery.matches;
+      elapsed += delta * (reducedMotion ? 0.04 : isPlaying ? 1 : 0.22);
 
       const { height, width } = dimensionsRef.current;
       const barCount = Math.round(72 + controlValues.density * 0.8);
@@ -78,7 +82,7 @@ export function CanvasVisualizer({
       const timeScale = elapsed * 0.001 * (0.35 + controlValues.speed / 55);
       const beatPulse =
         (Math.sin(timeScale * 2.2) * 0.5 + 0.5) *
-        (isPlaying ? 0.34 : 0.08) *
+        (reducedMotion ? 0.03 : isPlaying ? 0.34 : 0.08) *
         (controlValues.sensitivity / 100);
 
       const haze = context.createRadialGradient(
@@ -97,7 +101,8 @@ export function CanvasVisualizer({
 
       context.save();
       context.globalAlpha = 0.38;
-      for (let i = 0; i < 48; i += 1) {
+      const particleCount = reducedMotion ? 14 : 48;
+      for (let i = 0; i < particleCount; i += 1) {
         const seed = i * 97.13;
         const x =
           ((Math.sin(seed) * 0.5 + 0.5) * width +
@@ -136,7 +141,7 @@ export function CanvasVisualizer({
           baseWave +
           secondaryWave +
           beatPulse +
-          randomVariation;
+          (reducedMotion ? randomVariation * 0.2 : randomVariation);
         const lerpAmount = 0.05 + ((100 - controlValues.smoothing) / 100) * 0.26;
 
         barsRef.current[i] += (target - barsRef.current[i]) * lerpAmount;
@@ -206,7 +211,16 @@ export function CanvasVisualizer({
     };
   }, [controlValues, isPlaying]);
 
-  return <canvas className="h-full w-full" ref={canvasRef} />;
+  return (
+    <canvas
+      aria-label="Abstract circular audio visualizer with violet and cyan radial bars"
+      className="h-full w-full"
+      ref={canvasRef}
+      role="img"
+    >
+      Abstract circular audio visualizer preview.
+    </canvas>
+  );
 }
 
 function seededNoise(index: number) {

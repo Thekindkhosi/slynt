@@ -42,6 +42,7 @@ export function EffectsBrowser({
         <div className="relative w-full md:w-56 xl:w-64">
           <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-[var(--text-muted)]" />
           <input
+            aria-label="Search effects"
             className="h-10 w-full rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] pl-9 pr-3 text-[13px] text-white outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]"
             onChange={(event) => setSearchTerm(event.target.value)}
             placeholder="Search effects"

@@ -59,13 +59,14 @@ export function EffectTabs({
 }: EffectTabsProps) {
   return (
     <div className="border-b border-[var(--border-subtle)] px-3 sm:px-4">
-      <div className="flex gap-1 overflow-x-auto">
+      <div aria-label="Effect categories" className="flex gap-1 overflow-x-auto" role="tablist">
         {categories.map((category) => {
           const active = activeCategory === category;
           const IconComponent = tabMeta[category].icon;
 
           return (
             <button
+              aria-selected={active}
               className={cn(
                 "relative flex min-h-10 shrink-0 items-center gap-2 rounded-t-[7px] px-3 py-2.5 text-xs font-medium transition",
                 active
@@ -74,6 +75,7 @@ export function EffectTabs({
               )}
               key={category}
               onClick={() => setActiveCategory(category)}
+              role="tab"
               type="button"
             >
               <IconComponent className="h-4 w-4" />

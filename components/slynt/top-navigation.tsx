@@ -25,6 +25,8 @@ export function TopNavigation({ exportValues }: TopNavigationProps) {
       <div className="relative">
         <button
           aria-expanded={exportOpen}
+          aria-haspopup="dialog"
+          aria-label="Export video"
           className="flex h-10 items-center gap-2 rounded-[7px] bg-[var(--accent)] px-3 text-[13px] font-semibold text-white transition hover:bg-[var(--accent-hover)]"
           onClick={() => setExportOpen((open) => !open)}
           type="button"
