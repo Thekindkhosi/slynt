@@ -1,15 +1,17 @@
 import type { Dispatch, SetStateAction } from "react";
-import type { ControlValues } from "@/types/editor";
+import type { AudioTrack, ControlValues } from "@/types/editor";
 import { CanvasVisualizer } from "./canvas-visualizer";
 import { PlaybackControls } from "./playback-controls";
 
 type PreviewStageProps = {
+  audioTrack: AudioTrack | null;
   currentTime: number;
   duration: number;
   controlValues: ControlValues;
   isPlaying: boolean;
   setIsPlaying: (value: boolean) => void;
   setCurrentTime: Dispatch<SetStateAction<number>>;
+  setDuration: (value: number) => void;
   setVolume: (value: number) => void;
   selectedBackground: string;
   selectedVisualizer: string;
@@ -17,12 +19,14 @@ type PreviewStageProps = {
 };
 
 export function PreviewStage({
+  audioTrack,
   currentTime,
   duration,
   controlValues,
   isPlaying,
   setIsPlaying,
   setCurrentTime,
+  setDuration,
   setVolume,
   volume,
 }: PreviewStageProps) {
@@ -46,8 +50,12 @@ export function PreviewStage({
           </div>
 
           <div className="absolute right-4 top-4 flex items-center gap-2 rounded-[7px] border border-white/10 bg-black/45 px-2.5 py-1.5 text-[11px] font-medium text-zinc-200">
-            <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)]" />
-            Preview
+            <span
+              className={`h-1.5 w-1.5 rounded-full ${
+                audioTrack ? "bg-[var(--success)]" : "bg-[var(--text-muted)]"
+              }`}
+            />
+            {audioTrack ? "Audio connected" : "Preview"}
           </div>
 
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -63,10 +71,12 @@ export function PreviewStage({
 
           <div className="absolute bottom-4 left-4 right-4">
             <PlaybackControls
+              audioTrack={audioTrack}
               currentTime={currentTime}
               duration={duration}
               isPlaying={isPlaying}
               setCurrentTime={setCurrentTime}
+              setDuration={setDuration}
               setIsPlaying={setIsPlaying}
               setVolume={setVolume}
               volume={volume}

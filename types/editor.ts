@@ -44,6 +44,11 @@ export type ExportValues = {
   quality: string;
 };
 
+export type AudioTrack = {
+  name: string;
+  url: string;
+};
+
 export type SceneValues = {
   backgroundBrightness: number;
   cameraMovement: number;

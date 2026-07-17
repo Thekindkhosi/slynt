@@ -8,27 +8,32 @@ import {
   Volume2,
 } from "lucide-react";
 import { useEffect, useRef, type Dispatch, type SetStateAction } from "react";
-import type { Icon } from "@/types/editor";
+import type { AudioTrack, Icon } from "@/types/editor";
 
 type PlaybackControlsProps = {
+  audioTrack: AudioTrack | null;
   currentTime: number;
   duration: number;
   isPlaying: boolean;
   setCurrentTime: Dispatch<SetStateAction<number>>;
+  setDuration: (value: number) => void;
   setIsPlaying: (value: boolean) => void;
   setVolume: (value: number) => void;
   volume: number;
 };
 
 export function PlaybackControls({
+  audioTrack,
   currentTime,
   duration,
   isPlaying,
   setCurrentTime,
+  setDuration,
   setIsPlaying,
   setVolume,
   volume,
 }: PlaybackControlsProps) {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const animationRef = useRef<number | null>(null);
   const lastFrameRef = useRef<number | null>(null);
   const progress =
@@ -37,6 +42,72 @@ export function PlaybackControls({
   const volumeBackground = `linear-gradient(90deg, var(--accent) 0%, var(--accent) ${volume}%, #1b1b22 ${volume}%, #1b1b22 100%)`;
 
   useEffect(() => {
+    const audio = audioRef.current;
+
+    if (!audio) {
+      return;
+    }
+
+    audio.volume = volume / 100;
+  }, [volume, audioTrack?.url]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+
+    if (!audio || !audioTrack) {
+      return;
+    }
+
+    const handleLoadedMetadata = () => {
+      setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
+      setCurrentTime(0);
+    };
+    const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+      audio.currentTime = 0;
+    };
+
+    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+    audio.addEventListener("ended", handleEnded);
+    audio.load();
+
+    return () => {
+      audio.pause();
+      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      audio.removeEventListener("timeupdate", handleTimeUpdate);
+      audio.removeEventListener("ended", handleEnded);
+    };
+  }, [
+    audioTrack,
+    setCurrentTime,
+    setDuration,
+    setIsPlaying,
+  ]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+
+    if (!audio || !audioTrack) {
+      return;
+    }
+
+    if (isPlaying) {
+      audio.play().catch(() => setIsPlaying(false));
+      return;
+    }
+
+    audio.pause();
+  }, [audioTrack, isPlaying, setIsPlaying]);
+
+  useEffect(() => {
+    if (audioTrack) {
+      lastFrameRef.current = null;
+      return;
+    }
+
     if (!isPlaying) {
       lastFrameRef.current = null;
       return;
@@ -71,15 +142,28 @@ export function PlaybackControls({
       }
       animationRef.current = null;
     };
-  }, [duration, isPlaying, setCurrentTime, setIsPlaying]);
+  }, [audioTrack, duration, isPlaying, setCurrentTime, setIsPlaying]);
+
+  const seekTo = (value: number) => {
+    const nextTime = Math.max(0, Math.min(duration, value));
+
+    if (audioRef.current && audioTrack) {
+      audioRef.current.currentTime = nextTime;
+    }
+
+    setCurrentTime(nextTime);
+  };
 
   return (
     <div className="flex w-full flex-col gap-2 rounded-[8px] border border-white/10 bg-[#050506]/70 p-2.5 backdrop-blur-sm">
+      {audioTrack ? (
+        <audio ref={audioRef} src={audioTrack.url} />
+      ) : null}
       <div className="flex flex-wrap items-center gap-2">
         <IconButton
           icon={StepBack}
           label="Previous"
-          onClick={() => setCurrentTime((current) => Math.max(0, current - 10))}
+          onClick={() => seekTo(currentTime - 10)}
         />
         <button
           aria-label={isPlaying ? "Pause preview" : "Play preview"}
@@ -96,9 +180,7 @@ export function PlaybackControls({
         <IconButton
           icon={StepForward}
           label="Next"
-          onClick={() =>
-            setCurrentTime((current) => Math.min(duration, current + 10))
-          }
+          onClick={() => seekTo(currentTime + 10)}
         />
 
         <span className="min-h-10 w-[74px] shrink-0 content-center font-mono text-[11px] text-zinc-300 sm:w-[92px]">
@@ -110,7 +192,7 @@ export function PlaybackControls({
           className="slynt-progress h-4 min-w-28 flex-1"
           max={duration}
           min="0"
-          onChange={(event) => setCurrentTime(Number(event.target.value))}
+          onChange={(event) => seekTo(Number(event.target.value))}
           style={{ background: seekBackground }}
           type="range"
           value={currentTime}

@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { effects } from "@/data/effects";
 import type {
+  AudioTrack,
   ControlValues,
   EffectCategory,
   ExportValues,
@@ -31,8 +32,9 @@ export function SlyntEditor() {
   });
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(67);
-  const [duration] = useState(204);
+  const [duration, setDuration] = useState(204);
   const [volume, setVolume] = useState(70);
+  const [audioTrack, setAudioTrack] = useState<AudioTrack | null>(null);
   const [controlValues, setControlValues] = useState<ControlValues>({
     intensity: 75,
     sensitivity: 65,
@@ -78,20 +80,46 @@ export function SlyntEditor() {
     [activeCategory],
   );
 
+  useEffect(() => {
+    return () => {
+      if (audioTrack) {
+        URL.revokeObjectURL(audioTrack.url);
+      }
+    };
+  }, [audioTrack]);
+
+  const handleAudioUpload = (file: File) => {
+    const track = {
+      name: file.name,
+      url: URL.createObjectURL(file),
+    };
+
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+    setAudioTrack(track);
+  };
+
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--text-primary)]">
       <div className="mx-auto flex min-h-screen w-full max-w-[1720px] flex-col px-3 py-3 sm:px-5 lg:px-6 xl:px-8">
-        <TopNavigation exportValues={exportValues} />
+        <TopNavigation
+          audioTrack={audioTrack}
+          exportValues={exportValues}
+          onAudioUpload={handleAudioUpload}
+        />
 
         <section className="grid flex-1 grid-cols-1 gap-4 py-4 lg:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[minmax(0,1fr)_390px]">
           <div className="flex min-w-0 flex-col gap-4">
             <PreviewStage
+              audioTrack={audioTrack}
               currentTime={currentTime}
               duration={duration}
               controlValues={controlValues}
               isPlaying={isPlaying}
               setIsPlaying={setIsPlaying}
               setCurrentTime={setCurrentTime}
+              setDuration={setDuration}
               setVolume={setVolume}
               selectedBackground={selectedBackground}
               selectedVisualizer={selectedVisualizer}
