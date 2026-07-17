@@ -1,48 +1,108 @@
 "use client";
 
 import {
+  AudioWaveform,
+  ChevronDown,
+  ChevronRight,
   Download,
-  Gauge,
+  Image,
   Layers3,
-  Lock,
+  ListMusic,
+  CircleGauge,
   MoreHorizontal,
   RotateCcw,
   SlidersHorizontal,
-  Wand2,
+  Type,
   Zap,
+  Diamond,
 } from "lucide-react";
-import { useState } from "react";
-import type { ControlValues, Effect, ExportValues, Icon } from "@/types/editor";
+import { useState, type ReactNode } from "react";
+import type {
+  ControlValues,
+  Effect,
+  EffectCategory,
+  ExportValues,
+  Icon,
+} from "@/types/editor";
 import { ControlSection } from "./control-section";
 import { ExportSettings } from "./export-settings";
 import { RangeControl } from "./range-control";
+import { SelectControl } from "./select-control";
 import { ToggleControl } from "./toggle-control";
 import { cn } from "./utils";
 
 type ControlSidebarProps = {
+  activeCategory: EffectCategory;
   effect: Effect;
   controlValues: ControlValues;
   exportValues: ExportValues;
   setControlValues: (values: ControlValues) => void;
   setExportValues: (values: ExportValues) => void;
+  selectedVisualizer: string;
+  setSelectedVisualizer: (id: string) => void;
   setTransparent: (value: boolean) => void;
   transparent: boolean;
 };
 
 type SidebarTabId = "effect" | "scene";
 
+const visualizerTypes: Array<{
+  icon: Icon;
+  id: string;
+  label: string;
+}> = [
+  { icon: AudioWaveform, id: "spectrum-bars", label: "Spectrum Bars" },
+  { icon: CircleGauge, id: "circular-spectrum", label: "Circular" },
+  { icon: RotateCcw, id: "radial-wave", label: "Radial" },
+  { icon: AudioWaveform, id: "waveform", label: "Wave" },
+];
+
+const sectionMeta: Array<{
+  category: Exclude<EffectCategory, "audio-reactives">;
+  icon: Icon;
+  label: string;
+}> = [
+  { category: "background", icon: Image, label: "Background" },
+  { category: "track-progress", icon: CircleGauge, label: "Track Progress" },
+  { category: "playlist", icon: ListMusic, label: "Playlist" },
+  { category: "cover", icon: Image, label: "Cover" },
+  { category: "text", icon: Type, label: "Text" },
+  { category: "logo", icon: Diamond, label: "Logo" },
+];
+
 export function ControlSidebar({
+  activeCategory,
   effect,
   controlValues,
   exportValues,
   setControlValues,
   setExportValues,
+  selectedVisualizer,
+  setSelectedVisualizer,
   setTransparent,
   transparent,
 }: ControlSidebarProps) {
   const [activeTab, setActiveTab] = useState<SidebarTabId>("effect");
+  const [colorStyle, setColorStyle] = useState("Dual Tone");
+  const [colorGradient, setColorGradient] = useState("Violet to Cyan");
+  const [openSections, setOpenSections] = useState<Record<EffectCategory, boolean>>({
+    background: true,
+    "audio-reactives": false,
+    "track-progress": false,
+    playlist: false,
+    cover: false,
+    text: false,
+    logo: false,
+  });
+
   const updateValue = (key: keyof ControlValues, value: number | boolean) => {
     setControlValues({ ...controlValues, [key]: value });
+  };
+  const toggleSection = (category: EffectCategory) => {
+    setOpenSections((current) => ({
+      ...current,
+      [category]: !current[category],
+    }));
   };
 
   return (
@@ -73,66 +133,72 @@ export function ControlSidebar({
       <div className="flex-1 space-y-4 p-4">
         {activeTab === "effect" ? (
           <>
-            <ControlSection icon={SlidersHorizontal} title="Effect Controls">
-              <RangeControl
-                label="Intensity"
-                onChange={(value) => updateValue("intensity", value)}
-                value={controlValues.intensity}
+            {activeCategory === "audio-reactives" ? (
+              <AudioReactiveControls
+                colorGradient={colorGradient}
+                colorStyle={colorStyle}
+                controlValues={controlValues}
+                selectedVisualizer={selectedVisualizer}
+                setColorGradient={setColorGradient}
+                setColorStyle={setColorStyle}
+                setSelectedVisualizer={setSelectedVisualizer}
+                updateValue={updateValue}
               />
-              <RangeControl
-                label="Sensitivity"
-                onChange={(value) => updateValue("sensitivity", value)}
-                value={controlValues.sensitivity}
-              />
-              <RangeControl
-                label="Bar Height"
-                onChange={(value) => updateValue("barHeight", value)}
-                value={controlValues.barHeight}
-              />
-              <RangeControl
-                label="Speed"
-                onChange={(value) => updateValue("speed", value)}
-                value={controlValues.speed}
-              />
-              <RangeControl
-                label="Smoothing"
-                onChange={(value) => updateValue("smoothing", value)}
-                value={controlValues.smoothing}
-              />
-              <RangeControl
-                label="Density"
-                onChange={(value) => updateValue("density", value)}
-                value={controlValues.density}
-              />
-            </ControlSection>
+            ) : (
+              <ControlSection icon={SlidersHorizontal} title="Category Controls">
+                <p className="mb-4 text-xs leading-5 text-[var(--text-secondary)]">
+                  Adjust the selected {categoryLabel(activeCategory)} layer.
+                </p>
+                <RangeControl
+                  label="Intensity"
+                  onChange={(value) => updateValue("intensity", value)}
+                  value={controlValues.intensity}
+                />
+                <RangeControl
+                  label="Speed"
+                  onChange={(value) => updateValue("speed", value)}
+                  value={controlValues.speed}
+                />
+              </ControlSection>
+            )}
 
-            <ControlSection icon={Wand2} title="Reactive Mapping">
-              <div className="grid grid-cols-2 gap-2">
-                <ToggleControl active icon={Zap} label="Beat sync" />
-                <ToggleControl
-                  active={controlValues.glowEnabled}
-                  icon={RotateCcw}
-                  label="Glow"
-                  onClick={() =>
-                    updateValue("glowEnabled", !controlValues.glowEnabled)
-                  }
-                />
-                <ToggleControl active icon={Gauge} label="Peak hold" />
-                <ToggleControl icon={Lock} label="Lock seed" />
-              </div>
-              <div className="mt-4">
-                <RangeControl
-                  label="Glow Intensity"
-                  onChange={(value) => updateValue("glowIntensity", value)}
-                  value={controlValues.glowIntensity}
-                />
-                <RangeControl
-                  label="Glow Blur"
-                  onChange={(value) => updateValue("glowBlur", value)}
-                  value={controlValues.glowBlur}
-                />
-              </div>
-            </ControlSection>
+            <div className="space-y-2">
+              {sectionMeta.map((section) => (
+                <CollapsibleSection
+                  icon={section.icon}
+                  key={section.category}
+                  label={section.label}
+                  onToggle={() => toggleSection(section.category)}
+                  open={openSections[section.category]}
+                >
+                  {section.category === "background" ? (
+                    <div className="space-y-4">
+                      <label className="flex items-center justify-between rounded-[8px] border border-[var(--border-subtle)] bg-[var(--surface-secondary)] px-3 py-3 text-sm text-[var(--text-secondary)]">
+                        Transparent background
+                        <input
+                          checked={transparent}
+                          className="h-4 w-4 accent-[var(--accent)]"
+                          onChange={(event) =>
+                            setTransparent(event.target.checked)
+                          }
+                          type="checkbox"
+                        />
+                      </label>
+                      <RangeControl
+                        label="Background Density"
+                        onChange={(value) => updateValue("density", value)}
+                        value={controlValues.density}
+                      />
+                    </div>
+                  ) : (
+                    <p className="text-xs leading-5 text-[var(--text-muted)]">
+                      {section.label} layer settings will appear here when that
+                      layer is selected.
+                    </p>
+                  )}
+                </CollapsibleSection>
+              ))}
+            </div>
           </>
         ) : (
           <>
@@ -175,6 +241,184 @@ export function ControlSidebar({
       </div>
     </aside>
   );
+}
+
+function AudioReactiveControls({
+  colorGradient,
+  colorStyle,
+  controlValues,
+  selectedVisualizer,
+  setColorGradient,
+  setColorStyle,
+  setSelectedVisualizer,
+  updateValue,
+}: {
+  colorGradient: string;
+  colorStyle: string;
+  controlValues: ControlValues;
+  selectedVisualizer: string;
+  setColorGradient: (value: string) => void;
+  setColorStyle: (value: string) => void;
+  setSelectedVisualizer: (id: string) => void;
+  updateValue: (key: keyof ControlValues, value: number | boolean) => void;
+}) {
+  return (
+    <ControlSection icon={AudioWaveform} title="AUDIO REACTIVES">
+      <div className="mb-4">
+        <p className="mb-2 text-xs text-[var(--text-muted)]">
+          Visualizer type
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {visualizerTypes.map((type) => (
+            <VisualizerTypeButton
+              active={selectedVisualizer === type.id}
+              icon={type.icon}
+              key={type.id}
+              label={type.label}
+              onClick={() => setSelectedVisualizer(type.id)}
+            />
+          ))}
+        </div>
+      </div>
+
+      <RangeControl
+        label="Intensity"
+        onChange={(value) => updateValue("intensity", value)}
+        value={controlValues.intensity}
+      />
+      <RangeControl
+        label="Sensitivity"
+        onChange={(value) => updateValue("sensitivity", value)}
+        value={controlValues.sensitivity}
+      />
+      <RangeControl
+        label="Bar Height"
+        onChange={(value) => updateValue("barHeight", value)}
+        value={controlValues.barHeight}
+      />
+      <RangeControl
+        label="Speed"
+        onChange={(value) => updateValue("speed", value)}
+        value={controlValues.speed}
+      />
+      <RangeControl
+        label="Smoothing"
+        onChange={(value) => updateValue("smoothing", value)}
+        value={controlValues.smoothing}
+      />
+      <RangeControl
+        label="Density"
+        onChange={(value) => updateValue("density", value)}
+        value={controlValues.density}
+      />
+
+      <div className="mt-4 grid gap-3">
+        <SelectControl
+          label="Color Style"
+          onChange={setColorStyle}
+          options={["Dual Tone", "Mono Violet", "Cool Cyan", "Soft White"]}
+          value={colorStyle}
+        />
+        <SelectControl
+          label="Color Gradient"
+          onChange={setColorGradient}
+          options={["Violet to Cyan", "Indigo to Violet", "Cyan to White"]}
+          value={colorGradient}
+        />
+      </div>
+
+      <div className="mt-4">
+        <ToggleControl
+          active={controlValues.glowEnabled}
+          icon={Zap}
+          label="Glow"
+          onClick={() => updateValue("glowEnabled", !controlValues.glowEnabled)}
+        />
+      </div>
+      <div className="mt-4">
+        <RangeControl
+          label="Glow Intensity"
+          onChange={(value) => updateValue("glowIntensity", value)}
+          value={controlValues.glowIntensity}
+        />
+        <RangeControl
+          label="Glow Blur"
+          onChange={(value) => updateValue("glowBlur", value)}
+          value={controlValues.glowBlur}
+        />
+      </div>
+    </ControlSection>
+  );
+}
+
+function VisualizerTypeButton({
+  active,
+  icon: IconComponent,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  icon: Icon;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      className={cn(
+        "flex min-h-16 flex-col items-start justify-between rounded-[8px] border p-3 text-left text-xs transition",
+        active
+          ? "border-[var(--accent)] bg-[var(--accent-soft)] text-white"
+          : "border-[var(--border)] text-[var(--text-secondary)] hover:text-white",
+      )}
+      onClick={onClick}
+      type="button"
+    >
+      <IconComponent className="h-4 w-4" />
+      {label}
+    </button>
+  );
+}
+
+function CollapsibleSection({
+  children,
+  icon: IconComponent,
+  label,
+  onToggle,
+  open,
+}: {
+  children: ReactNode;
+  icon: Icon;
+  label: string;
+  onToggle: () => void;
+  open: boolean;
+}) {
+  return (
+    <section className="rounded-[8px] border border-[var(--border-subtle)] bg-[var(--surface-secondary)]">
+      <button
+        className="flex w-full items-center justify-between gap-3 px-3 py-3 text-left"
+        onClick={onToggle}
+        type="button"
+      >
+        <span className="flex items-center gap-2 text-sm font-medium text-white">
+          <IconComponent className="h-4 w-4 text-[var(--accent)]" />
+          {label}
+        </span>
+        {open ? (
+          <ChevronDown className="h-4 w-4 text-[var(--text-muted)]" />
+        ) : (
+          <ChevronRight className="h-4 w-4 text-[var(--text-muted)]" />
+        )}
+      </button>
+      {open ? <div className="border-t border-[var(--border-subtle)] p-3">{children}</div> : null}
+    </section>
+  );
+}
+
+function categoryLabel(category: EffectCategory) {
+  return category
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 function SidebarTab({

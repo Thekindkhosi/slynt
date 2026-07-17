@@ -52,6 +52,13 @@ export function SlyntEditor() {
     [selectedVisualizer],
   );
 
+  const inspectedEffect = useMemo(
+    () =>
+      effects.find((effect) => effect.id === selectedByCategory[activeCategory]) ??
+      selectedEffect,
+    [activeCategory, selectedByCategory, selectedEffect],
+  );
+
   const filteredEffects = useMemo(
     () => effects.filter((effect) => effect.category === activeCategory),
     [activeCategory],
@@ -101,11 +108,20 @@ export function SlyntEditor() {
           </div>
 
           <ControlSidebar
+            activeCategory={activeCategory}
             controlValues={controlValues}
-            effect={selectedEffect}
+            effect={inspectedEffect}
             exportValues={exportValues}
             setControlValues={setControlValues}
             setExportValues={setExportValues}
+            selectedVisualizer={selectedVisualizer}
+            setSelectedVisualizer={(id) => {
+              setSelectedVisualizer(id);
+              setSelectedByCategory((current) => ({
+                ...current,
+                "audio-reactives": id,
+              }));
+            }}
             setTransparent={setTransparent}
             transparent={transparent}
           />
