@@ -1,3 +1,12 @@
+import {
+  AudioWaveform,
+  CircleGauge,
+  Diamond,
+  Image,
+  ImageIcon,
+  ListMusic,
+  Type,
+} from "lucide-react";
 import type { EffectCategory } from "@/types/editor";
 import { categories } from "@/data/effects";
 import { cn } from "./utils";
@@ -7,28 +16,74 @@ type EffectTabsProps = {
   setActiveCategory: (category: EffectCategory) => void;
 };
 
+const tabMeta: Record<
+  EffectCategory,
+  {
+    icon: typeof Image;
+    label: string;
+  }
+> = {
+  background: {
+    icon: Image,
+    label: "Background",
+  },
+  "audio-reactives": {
+    icon: AudioWaveform,
+    label: "Audio Reactives",
+  },
+  "track-progress": {
+    icon: CircleGauge,
+    label: "Track Progress",
+  },
+  playlist: {
+    icon: ListMusic,
+    label: "Playlist",
+  },
+  cover: {
+    icon: ImageIcon,
+    label: "Cover",
+  },
+  text: {
+    icon: Type,
+    label: "Text",
+  },
+  logo: {
+    icon: Diamond,
+    label: "Logo",
+  },
+};
+
 export function EffectTabs({
   activeCategory,
   setActiveCategory,
 }: EffectTabsProps) {
   return (
-    <div className="border-b border-[var(--border-subtle)] px-4 py-3">
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        {categories.map((category) => (
-          <button
-            className={cn(
-              "shrink-0 rounded-[7px] border px-4 py-2 text-xs font-medium transition",
-              activeCategory === category
-                ? "border-[var(--accent)] bg-[var(--accent-soft)] text-white"
-                : "border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] hover:text-white",
-            )}
-            key={category}
-            onClick={() => setActiveCategory(category)}
-            type="button"
-          >
-            {category}
-          </button>
-        ))}
+    <div className="border-b border-[var(--border-subtle)] px-4">
+      <div className="flex gap-1 overflow-x-auto">
+        {categories.map((category) => {
+          const active = activeCategory === category;
+          const IconComponent = tabMeta[category].icon;
+
+          return (
+            <button
+              className={cn(
+                "relative flex shrink-0 items-center gap-2 rounded-t-[7px] px-3 py-3 text-xs font-medium transition",
+                active
+                  ? "bg-[var(--surface-hover)] text-[var(--accent)]"
+                  : "text-[var(--text-muted)] hover:bg-[var(--surface-secondary)] hover:text-[var(--text-secondary)]",
+              )}
+              key={category}
+              onClick={() => setActiveCategory(category)}
+              type="button"
+            >
+              <IconComponent className="h-4 w-4" />
+              {tabMeta[category].label}
+              {active ? (
+                <span className="absolute bottom-0 left-3 right-3 h-px bg-[var(--accent)]" />
+              ) : null}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
