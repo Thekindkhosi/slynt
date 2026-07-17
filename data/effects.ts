@@ -1,0 +1,97 @@
+import {
+  Activity,
+  AudioLines,
+  Circle,
+  Grid2X2,
+  Sparkles,
+  Waves,
+} from "lucide-react";
+import type { Effect, EffectCategory, ExportPreset } from "@/types/editor";
+
+export const categories: EffectCategory[] = [
+  "Core",
+  "Motion",
+  "Reactive",
+  "Texture",
+];
+
+export const effects: Effect[] = [
+  {
+    id: "spectral-bars",
+    name: "Spectral Bars",
+    category: "Core",
+    description: "Balanced columns with restrained low-end lift.",
+    icon: AudioLines,
+    accent: "#8b5cf6",
+    intensity: 72,
+    motion: 54,
+    bloom: 18,
+    density: 64,
+  },
+  {
+    id: "orbital-ring",
+    name: "Orbital Ring",
+    category: "Core",
+    description: "Circular analyzer with soft phase rotation.",
+    icon: Circle,
+    accent: "#38bdf8",
+    intensity: 66,
+    motion: 68,
+    bloom: 22,
+    density: 48,
+  },
+  {
+    id: "wave-field",
+    name: "Wave Field",
+    category: "Motion",
+    description: "Layered waveform ribbons with gradual drift.",
+    icon: Waves,
+    accent: "#a78bfa",
+    intensity: 58,
+    motion: 78,
+    bloom: 14,
+    density: 72,
+  },
+  {
+    id: "pulse-grid",
+    name: "Pulse Grid",
+    category: "Reactive",
+    description: "Beat-aware cells tuned for percussion edits.",
+    icon: Grid2X2,
+    accent: "#4ade80",
+    intensity: 80,
+    motion: 46,
+    bloom: 16,
+    density: 58,
+  },
+  {
+    id: "phase-trace",
+    name: "Phase Trace",
+    category: "Reactive",
+    description: "Fine signal line with transient sparkle.",
+    icon: Activity,
+    accent: "#38bdf8",
+    intensity: 62,
+    motion: 60,
+    bloom: 28,
+    density: 82,
+  },
+  {
+    id: "grain-noir",
+    name: "Grain Noir",
+    category: "Texture",
+    description: "Matte film grain and subtle signal dust.",
+    icon: Sparkles,
+    accent: "#8b5cf6",
+    intensity: 48,
+    motion: 38,
+    bloom: 10,
+    density: 70,
+  },
+];
+
+export const exportPresets: ExportPreset[] = [
+  { label: "4K UHD", value: "3840 x 2160" },
+  { label: "1080p", value: "1920 x 1080" },
+  { label: "Square", value: "1080 x 1080" },
+];
