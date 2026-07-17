@@ -49,6 +49,41 @@ export type AudioTrack = {
   url: string;
 };
 
+export type BackgroundMode = "image" | "gradient";
+
+export type BackgroundImageFit = "cover" | "contain" | "fill";
+
+export type BackgroundImageValues = {
+  brightness: number;
+  blur: number;
+  contrast: number;
+  fit: BackgroundImageFit;
+  name: string;
+  opacity: number;
+  positionX: number;
+  positionY: number;
+  scale: number;
+  url: string;
+};
+
+export type GradientStop = {
+  id: string;
+  blur: number;
+  color: string;
+  positionX: number;
+  positionY: number;
+  size: number;
+};
+
+export type BackgroundValues = {
+  mode: BackgroundMode;
+  image: BackgroundImageValues;
+  gradient: {
+    activeStopId: string;
+    stops: GradientStop[];
+  };
+};
+
 export type SceneValues = {
   backgroundBrightness: number;
   cameraMovement: number;

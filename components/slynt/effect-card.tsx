@@ -56,6 +56,28 @@ function Thumbnail({ effect }: { effect: Effect }) {
 }
 
 function ThumbnailShape({ effect }: { effect: Effect }) {
+  if (effect.category === "background" && effect.id === "image") {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="grid h-16 w-24 grid-cols-2 gap-1 rounded-[7px] border border-white/20 bg-black/20 p-1">
+          <span className="rounded-[4px] bg-cyan-300/35" />
+          <span className="rounded-[4px] bg-white/15" />
+          <span className="col-span-2 rounded-[4px] bg-[linear-gradient(135deg,rgba(139,92,246,0.55),rgba(56,189,248,0.3))]" />
+        </div>
+      </div>
+    );
+  }
+
+  if (effect.category === "background" && effect.id === "gradient") {
+    return (
+      <div className="absolute inset-0">
+        <span className="absolute left-5 top-5 h-16 w-16 rounded-full bg-violet-400/40 blur-xl" />
+        <span className="absolute bottom-5 right-6 h-14 w-14 rounded-full bg-cyan-300/35 blur-xl" />
+        <span className="absolute bottom-3 left-12 h-10 w-10 rounded-full bg-rose-400/35 blur-lg" />
+      </div>
+    );
+  }
+
   if (effect.category === "audio-reactives") {
     return (
       <div className="absolute inset-0 flex items-center justify-center">
@@ -162,6 +184,14 @@ function ThumbnailShape({ effect }: { effect: Effect }) {
 }
 
 function thumbnailBackground(id: string) {
+  if (id === "image") {
+    return "absolute inset-0 bg-[linear-gradient(135deg,#070709,#101014_52%,#050506)]";
+  }
+
+  if (id === "gradient") {
+    return "absolute inset-0 bg-[radial-gradient(circle_at_32%_35%,rgba(139,92,246,0.4),transparent_30%),radial-gradient(circle_at_72%_62%,rgba(56,189,248,0.28),transparent_28%),radial-gradient(circle_at_45%_78%,rgba(244,63,94,0.2),transparent_24%),#050506]";
+  }
+
   if (id === "black" || id === "none") {
     return "absolute inset-0 bg-black";
   }
