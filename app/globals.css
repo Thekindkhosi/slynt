@@ -1,8 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #050506;
+  --surface: #0a0a0c;
+  --surface-secondary: #101014;
+  --surface-hover: #15151b;
+  --border: #202027;
+  --border-subtle: #17171c;
+  --text-primary: #f5f5f7;
+  --text-secondary: #a1a1aa;
+  --text-muted: #66666f;
+  --accent: #8b5cf6;
+  --accent-hover: #9f7aea;
+  --accent-soft: rgba(139, 92, 246, 0.14);
+  --cyan: #38bdf8;
+  --success: #4ade80;
+  --foreground: var(--text-primary);
 }
 
 @theme inline {
@@ -12,15 +25,81 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--background);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--text-primary);
+}
+
+::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #262630;
+  border-radius: 999px;
+}
+
+.slynt-range {
+  appearance: none;
+  background: transparent;
+  height: 18px;
+}
+
+.slynt-range::-webkit-slider-runnable-track {
+  background: linear-gradient(90deg, var(--accent), #38bdf8);
+  border-radius: 999px;
+  height: 3px;
+}
+
+.slynt-range::-webkit-slider-thumb {
+  appearance: none;
+  background: var(--text-primary);
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+  height: 14px;
+  margin-top: -5.5px;
+  width: 14px;
+}
+
+.slynt-range::-moz-range-track {
+  background: linear-gradient(90deg, var(--accent), #38bdf8);
+  border-radius: 999px;
+  height: 3px;
+}
+
+.slynt-range::-moz-range-thumb {
+  background: var(--text-primary);
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+  height: 14px;
+  width: 14px;
 }
