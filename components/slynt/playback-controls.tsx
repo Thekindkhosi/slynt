@@ -155,7 +155,7 @@ export function PlaybackControls({
   };
 
   return (
-    <div className="flex w-full flex-col gap-2 rounded-[8px] border border-white/10 bg-[#050506]/70 p-2.5 backdrop-blur-sm">
+    <section className="flex w-full flex-col gap-3 rounded-[10px] border border-[var(--border)] bg-[var(--surface)] p-3 sm:p-4">
       {audioTrack ? (
         <audio ref={audioRef} src={audioTrack.url} />
       ) : null}
@@ -202,7 +202,7 @@ export function PlaybackControls({
           <Volume2 className="h-4 w-4 text-zinc-400" />
           <input
             aria-label="Volume"
-          className="slynt-progress h-4 w-20"
+            className="slynt-progress h-4 w-20"
             max="100"
             min="0"
             onChange={(event) => setVolume(Number(event.target.value))}
@@ -229,7 +229,7 @@ export function PlaybackControls({
           value={volume}
         />
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -245,7 +245,7 @@ function IconButton({
   return (
     <button
       aria-label={label}
-      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[7px] border border-white/10 bg-[#050506]/55 text-zinc-300 transition hover:border-[var(--accent)] hover:text-white"
+      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] text-[var(--text-secondary)] transition hover:border-[var(--accent)] hover:text-white"
       onClick={onClick}
       title={label}
       type="button"

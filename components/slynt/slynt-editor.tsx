@@ -11,13 +11,13 @@ import type {
 } from "@/types/editor";
 import { ControlSidebar } from "./control-sidebar";
 import { EffectsBrowser } from "./effects-browser";
+import { PlaybackControls } from "./playback-controls";
 import { PreviewStage } from "./preview-stage";
 import { TopNavigation } from "./top-navigation";
 
 export function SlyntEditor() {
   const [activeCategory, setActiveCategory] =
     useState<EffectCategory>("background");
-  const [selectedBackground, setSelectedBackground] = useState("nebula");
   const [selectedVisualizer, setSelectedVisualizer] = useState("spectrum-bars");
   const [selectedByCategory, setSelectedByCategory] = useState<
     Record<EffectCategory, string>
@@ -113,16 +113,19 @@ export function SlyntEditor() {
           <div className="flex min-w-0 flex-col gap-4">
             <PreviewStage
               audioTrack={audioTrack}
-              currentTime={currentTime}
-              duration={duration}
               controlValues={controlValues}
               isPlaying={isPlaying}
-              setIsPlaying={setIsPlaying}
+            />
+
+            <PlaybackControls
+              audioTrack={audioTrack}
+              currentTime={currentTime}
+              duration={duration}
               setCurrentTime={setCurrentTime}
               setDuration={setDuration}
+              setIsPlaying={setIsPlaying}
               setVolume={setVolume}
-              selectedBackground={selectedBackground}
-              selectedVisualizer={selectedVisualizer}
+              isPlaying={isPlaying}
               volume={volume}
             />
 
@@ -136,11 +139,6 @@ export function SlyntEditor() {
                   ...current,
                   [effect.category]: effect.id,
                 }));
-
-                if (effect.category === "background") {
-                  setSelectedBackground(effect.id);
-                  return;
-                }
 
                 if (effect.category === "audio-reactives") {
                   setSelectedVisualizer(effect.id);

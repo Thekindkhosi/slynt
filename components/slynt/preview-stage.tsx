@@ -1,34 +1,16 @@
-import type { Dispatch, SetStateAction } from "react";
 import type { AudioTrack, ControlValues } from "@/types/editor";
 import { CanvasVisualizer } from "./canvas-visualizer";
-import { PlaybackControls } from "./playback-controls";
 
 type PreviewStageProps = {
   audioTrack: AudioTrack | null;
-  currentTime: number;
-  duration: number;
   controlValues: ControlValues;
   isPlaying: boolean;
-  setIsPlaying: (value: boolean) => void;
-  setCurrentTime: Dispatch<SetStateAction<number>>;
-  setDuration: (value: number) => void;
-  setVolume: (value: number) => void;
-  selectedBackground: string;
-  selectedVisualizer: string;
-  volume: number;
 };
 
 export function PreviewStage({
   audioTrack,
-  currentTime,
-  duration,
   controlValues,
   isPlaying,
-  setIsPlaying,
-  setCurrentTime,
-  setDuration,
-  setVolume,
-  volume,
 }: PreviewStageProps) {
   return (
     <section className="overflow-hidden rounded-[10px] border border-[var(--border)] bg-[var(--surface)]">
@@ -67,20 +49,6 @@ export function PreviewStage({
                 FEEL THE FREQUENCY
               </p>
             </div>
-          </div>
-
-          <div className="absolute bottom-4 left-4 right-4">
-            <PlaybackControls
-              audioTrack={audioTrack}
-              currentTime={currentTime}
-              duration={duration}
-              isPlaying={isPlaying}
-              setCurrentTime={setCurrentTime}
-              setDuration={setDuration}
-              setIsPlaying={setIsPlaying}
-              setVolume={setVolume}
-              volume={volume}
-            />
           </div>
         </div>
       </div>
