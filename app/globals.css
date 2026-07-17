@@ -150,3 +150,38 @@ video {
   height: 14px;
   width: 14px;
 }
+
+.slynt-progress {
+  appearance: none;
+  border-radius: 999px;
+  outline: none;
+}
+
+.slynt-progress::-webkit-slider-runnable-track {
+  border-radius: 999px;
+  height: 4px;
+}
+
+.slynt-progress::-webkit-slider-thumb {
+  appearance: none;
+  background: var(--text-primary);
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+  height: 13px;
+  margin-top: -4.5px;
+  width: 13px;
+}
+
+.slynt-progress::-moz-range-track {
+  background: transparent;
+  border-radius: 999px;
+  height: 4px;
+}
+
+.slynt-progress::-moz-range-thumb {
+  background: var(--text-primary);
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+  height: 13px;
+  width: 13px;
+}

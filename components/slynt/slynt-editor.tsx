@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { effects } from "@/data/effects";
 import type { ControlValues, EffectCategory, ExportValues } from "@/types/editor";
 import { ControlSidebar } from "./control-sidebar";
@@ -16,7 +16,7 @@ export function SlyntEditor() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(67);
   const [duration] = useState(204);
-  const [volume] = useState(70);
+  const [volume, setVolume] = useState(70);
   const [controlValues, setControlValues] = useState<ControlValues>({
     intensity: 75,
     sensitivity: 65,
@@ -34,7 +34,6 @@ export function SlyntEditor() {
     aspectRatio: "16:9",
   });
   const [transparent, setTransparent] = useState(false);
-  const [loop, setLoop] = useState(true);
 
   const selectedEffect = useMemo(
     () =>
@@ -46,18 +45,6 @@ export function SlyntEditor() {
     () => effects.filter((effect) => effect.category === activeCategory),
     [activeCategory],
   );
-
-  useEffect(() => {
-    if (!isPlaying) {
-      return;
-    }
-
-    const interval = window.setInterval(() => {
-      setCurrentTime((current) => (current >= duration ? 0 : current + 1));
-    }, 120);
-
-    return () => window.clearInterval(interval);
-  }, [duration, isPlaying]);
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--text-primary)]">
@@ -71,10 +58,9 @@ export function SlyntEditor() {
               duration={duration}
               controlValues={controlValues}
               isPlaying={isPlaying}
-              loop={loop}
               setIsPlaying={setIsPlaying}
-              setLoop={setLoop}
               setCurrentTime={setCurrentTime}
+              setVolume={setVolume}
               selectedBackground={selectedBackground}
               selectedVisualizer={selectedVisualizer}
               volume={volume}
