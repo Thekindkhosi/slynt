@@ -4,15 +4,27 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "worker": "tsx scripts/render-worker.ts",
+    "dev:all": "concurrently -k \"npm:dev\" \"npm:worker\"",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx tests/slynt-utils.test.ts"
   },
   "dependencies": {
+    "@remotion/bundler": "4.0.490",
+    "@remotion/media-utils": "4.0.490",
+    "@remotion/player": "4.0.490",
+    "@remotion/renderer": "4.0.490",
+    "concurrently": "^9.2.1",
     "lucide-react": "^1.24.0",
     "next": "16.2.10",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "remotion": "4.0.490",
+    "tsx": "^4.20.6",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

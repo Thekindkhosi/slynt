@@ -1,4 +1,5 @@
-import type { ComponentType, SVGProps } from "react";
+import type { ComponentType, MutableRefObject, SVGProps } from "react";
+import type { AssetReference, SlyntProject } from "@/lib/slynt/project-schema";
 
 export type Icon = ComponentType<SVGProps<SVGSVGElement>>;
 
@@ -36,6 +37,8 @@ export type ControlValues = {
   glowBlur: number;
 };
 
+export type AudioAnalyserRef = MutableRefObject<AnalyserNode | null>;
+
 export type ExportValues = {
   resolution: string;
   frameRate: string;
@@ -48,6 +51,8 @@ export type AudioTrack = {
   name: string;
   url: string;
 };
+
+export type { AssetReference, SlyntProject };
 
 export type BackgroundMode = "image" | "gradient";
 

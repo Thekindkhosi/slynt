@@ -1,20 +1,30 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import type { PlayerRef } from "@remotion/player";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { effects } from "@/data/effects";
-import type {
-  AudioTrack,
-  BackgroundValues,
-  EffectCategory,
-  ExportValues,
-} from "@/types/editor";
+import { getAudioMetadataAndPeaks } from "@/lib/slynt/audio-analysis";
+import { createDefaultProject } from "@/lib/slynt/project-defaults";
+import {
+  clearProjectStorage,
+  loadProjectFromStorage,
+  projectToRenderProject,
+  saveProjectToStorage,
+} from "@/lib/slynt/project-utils";
+import type { AssetReference, SlyntProject } from "@/lib/slynt/project-schema";
+import type { EffectCategory } from "@/types/editor";
 import { ControlSidebar } from "./control-sidebar";
 import { EffectsBrowser } from "./effects-browser";
 import { PlaybackControls } from "./playback-controls";
 import { PreviewStage } from "./preview-stage";
-import { TopNavigation } from "./top-navigation";
+import { TopNavigation, type ExportUiState } from "./top-navigation";
 
 export function SlyntEditor() {
+  const playerRef = useRef<PlayerRef>(null);
+  const [project, setProjectState] = useState<SlyntProject>(() =>
+    createDefaultProject(),
+  );
+  const [hydrated, setHydrated] = useState(false);
   const [activeCategory, setActiveCategory] =
     useState<EffectCategory>("background");
   const [selectedByCategory, setSelectedByCategory] = useState<
@@ -23,139 +33,286 @@ export function SlyntEditor() {
     background: "gradient",
     "audio-reactives": "spectrum-bars",
     "track-progress": "minimal-line",
-    playlist: "playlist-hidden",
-    cover: "cover-hidden",
+    playlist: "current-track",
+    cover: "center-square",
     text: "track-title",
     logo: "logo-hidden",
   });
+  const [currentFrame, setCurrentFrame] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(67);
-  const [duration, setDuration] = useState(204);
-  const [volume, setVolume] = useState(70);
-  const [audioTrack, setAudioTrack] = useState<AudioTrack | null>(null);
-  const [backgroundValues, setBackgroundValues] = useState<BackgroundValues>({
-    mode: "gradient",
-    image: {
-      brightness: 100,
-      blur: 0,
-      contrast: 100,
-      fit: "cover",
-      name: "",
-      opacity: 100,
-      positionX: 50,
-      positionY: 50,
-      scale: 100,
-      url: "",
-    },
-    gradient: {
-      activeStopId: "violet-core",
-      stops: [
-        {
-          id: "violet-core",
-          blur: 18,
-          color: "#8b5cf6",
-          positionX: 42,
-          positionY: 38,
-          size: 52,
-        },
-        {
-          id: "cyan-edge",
-          blur: 22,
-          color: "#38bdf8",
-          positionX: 70,
-          positionY: 62,
-          size: 36,
-        },
-        {
-          id: "rose-floor",
-          blur: 28,
-          color: "#f43f5e",
-          positionX: 24,
-          positionY: 76,
-          size: 28,
-        },
-      ],
-    },
+  const [analyzing, setAnalyzing] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [exportState, setExportState] = useState<ExportUiState>({
+    canExport: false,
+    downloadUrl: null,
+    error: null,
+    jobId: null,
+    progress: 0,
+    stage: "",
+    status: "idle",
   });
-  const [exportValues] = useState<ExportValues>({
-    resolution: "1280 × 720 (HD)",
-    frameRate: "30 FPS",
-    aspectRatio: "16:9",
-    videoFormat: "MP4",
-    quality: "High",
-  });
+
   const filteredEffects = useMemo(
     () => effects.filter((effect) => effect.category === activeCategory),
     [activeCategory],
   );
 
-  useEffect(() => {
-    return () => {
-      if (audioTrack) {
-        URL.revokeObjectURL(audioTrack.url);
-      }
-    };
-  }, [audioTrack]);
+  const setProject = useCallback((nextProject: SlyntProject) => {
+    setProjectState(projectToRenderProject(nextProject));
+  }, []);
 
   useEffect(() => {
-    const imageUrl = backgroundValues.image.url;
+    setProjectState(loadProjectFromStorage());
+    setHydrated(true);
+  }, []);
 
-    return () => {
-      if (imageUrl) {
-        URL.revokeObjectURL(imageUrl);
+  useEffect(() => {
+    if (hydrated) {
+      saveProjectToStorage(project);
+    }
+  }, [hydrated, project]);
+
+  useEffect(() => {
+    const active =
+      exportState.status === "queued" || exportState.status === "rendering";
+    if (!active || !exportState.jobId) {
+      return;
+    }
+
+    const controller = new AbortController();
+    const poll = async () => {
+      try {
+        const response = await fetch(`/api/renders/${exportState.jobId}`, {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (!response.ok) {
+          throw new Error("Could not read render status.");
+        }
+        const data = (await response.json()) as { job: RenderJobResponse };
+        setExportState((current) => ({
+          ...current,
+          downloadUrl:
+            data.job.status === "completed"
+              ? `/api/renders/${data.job.id}/download`
+              : null,
+          error: data.job.error ?? null,
+          progress: data.job.progress,
+          stage: data.job.stage,
+          status: data.job.status,
+        }));
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setExportState((current) => ({
+            ...current,
+            error:
+              error instanceof Error
+                ? error.message
+                : "Failed to poll render status.",
+            stage: "Status polling failed",
+            status: "failed",
+          }));
+        }
       }
     };
-  }, [backgroundValues.image.url]);
 
-  const handleAudioUpload = (file: File) => {
-    const track = {
-      name: file.name,
-      url: URL.createObjectURL(file),
+    void poll();
+    const timer = window.setInterval(poll, 1500);
+    return () => {
+      controller.abort();
+      window.clearInterval(timer);
+    };
+  }, [exportState.jobId, exportState.status]);
+
+  useEffect(() => {
+    const canExport =
+      Boolean(project.audio.asset) &&
+      project.audio.durationInSeconds > 0 &&
+      !["submitting", "queued", "rendering"].includes(exportState.status);
+    setExportState((current) => ({ ...current, canExport }));
+  }, [exportState.status, project.audio.asset, project.audio.durationInSeconds]);
+
+  const uploadAsset = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await fetch("/api/assets", {
+      body: formData,
+      method: "POST",
+    });
+    const data = (await response.json()) as {
+      asset?: AssetReference;
+      error?: string;
     };
 
-    setIsPlaying(false);
-    setCurrentTime(0);
-    setDuration(0);
-    setAudioTrack(track);
+    if (!response.ok || !data.asset) {
+      throw new Error(data.error ?? "Upload failed.");
+    }
+
+    return data.asset;
   };
 
-  const handleBackgroundImageUpload = (file: File) => {
-    const imageUrl = URL.createObjectURL(file);
+  const handleAudioUpload = async (file: File) => {
+    setNotice(null);
+    setAnalyzing(true);
+    playerRef.current?.pause();
+    setIsPlaying(false);
+    setCurrentFrame(0);
 
-    setBackgroundValues((current) => ({
+    try {
+      const asset = await uploadAsset(file);
+      const analysis = await getAudioMetadataAndPeaks(asset.url);
+      setProject({
+        ...project,
+        audio: {
+          ...project.audio,
+          asset,
+          durationInSeconds: analysis.durationInSeconds,
+          waveformPeaks: analysis.waveformPeaks,
+        },
+        canvas: {
+          ...project.canvas,
+          durationInSeconds: Math.max(1, analysis.durationInSeconds),
+        },
+        name: asset.fileName.replace(/\.[^.]+$/, ""),
+      });
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "Audio upload failed.");
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  const handleImageUpload = async (
+    file: File,
+    target: "background" | "cover" | "logo",
+  ) => {
+    try {
+      const asset = await uploadAsset(file);
+      if (target === "background") {
+        setProject({
+          ...project,
+          background: {
+            ...project.background,
+            mode: "image",
+            image: { ...project.background.image, asset },
+          },
+        });
+      } else if (target === "cover") {
+        setProject({ ...project, track: { ...project.track, cover: asset } });
+      } else {
+        setProject({
+          ...project,
+          logo: {
+            ...project.logo,
+            asset,
+            placement: project.logo.placement === "hidden" ? "bottom-right" : project.logo.placement,
+          },
+        });
+      }
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "Image upload failed.");
+    }
+  };
+
+  const handleExport = async () => {
+    if (!exportState.canExport) {
+      return;
+    }
+
+    setExportState((current) => ({
       ...current,
-      mode: "image",
-      image: {
-        ...current.image,
-        name: file.name,
-        url: imageUrl,
-      },
+      canExport: false,
+      downloadUrl: null,
+      error: null,
+      progress: 0,
+      stage: "Submitting render job",
+      status: "submitting",
     }));
+
+    try {
+      const response = await fetch("/api/renders", {
+        body: JSON.stringify({ project }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      });
+      const data = (await response.json()) as {
+        job?: RenderJobResponse;
+        error?: string;
+      };
+
+      if (!response.ok || !data.job) {
+        throw new Error(data.error ?? "Could not create render job.");
+      }
+
+      const job = data.job;
+      setExportState((current) => ({
+        ...current,
+        jobId: job.id,
+        progress: job.progress,
+        stage: job.stage,
+        status: job.status,
+      }));
+    } catch (error) {
+      setExportState((current) => ({
+        ...current,
+        error:
+          error instanceof Error ? error.message : "Could not submit render job.",
+        stage: "Export failed",
+        status: "failed",
+      }));
+    }
+  };
+
+  const resetProject = () => {
+    if (!window.confirm("Reset the current SLYNT project?")) {
+      return;
+    }
+    playerRef.current?.pause();
+    clearProjectStorage();
+    setCurrentFrame(0);
+    setIsPlaying(false);
+    setProjectState(createDefaultProject());
+    setExportState({
+      canExport: false,
+      downloadUrl: null,
+      error: null,
+      jobId: null,
+      progress: 0,
+      stage: "",
+      status: "idle",
+    });
   };
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--text-primary)]">
       <div className="mx-auto flex min-h-screen w-full max-w-[1720px] flex-col px-3 py-3 sm:px-5 lg:px-6 xl:px-8">
         <TopNavigation
-          audioTrack={audioTrack}
-          exportValues={exportValues}
+          analyzing={analyzing}
+          exportState={exportState}
           onAudioUpload={handleAudioUpload}
+          onExport={handleExport}
+          project={project}
         />
+
+        {notice ? (
+          <div className="mt-3 rounded-[8px] border border-red-500/25 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            {notice}
+          </div>
+        ) : null}
 
         <section className="grid flex-1 grid-cols-1 gap-4 py-4 lg:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[minmax(0,1fr)_390px]">
           <div className="flex min-w-0 flex-col gap-4">
-            <PreviewStage backgroundValues={backgroundValues} />
+            <PreviewStage project={project} ref={playerRef} />
 
             <PlaybackControls
-              audioTrack={audioTrack}
-              currentTime={currentTime}
-              duration={duration}
-              setCurrentTime={setCurrentTime}
-              setDuration={setDuration}
-              setIsPlaying={setIsPlaying}
-              setVolume={setVolume}
+              currentFrame={currentFrame}
               isPlaying={isPlaying}
-              volume={volume}
+              playerRef={playerRef}
+              project={project}
+              resetProject={resetProject}
+              setCurrentFrame={setCurrentFrame}
+              setIsPlaying={setIsPlaying}
+              setProject={setProject}
             />
 
             <EffectsBrowser
@@ -168,15 +325,20 @@ export function SlyntEditor() {
                   ...current,
                   [effect.category]: effect.id,
                 }));
-                if (
-                  effect.category === "background" &&
-                  (effect.id === "image" || effect.id === "gradient")
-                ) {
-                  const mode = effect.id === "image" ? "image" : "gradient";
-                  setBackgroundValues((current) => ({
-                    ...current,
-                    mode,
-                  }));
+                if (effect.category === "background") {
+                  setProject({
+                    ...project,
+                    background: {
+                      ...project.background,
+                      mode: effect.id === "image" ? "image" : "gradient",
+                    },
+                  });
+                }
+                if (effect.category === "audio-reactives") {
+                  setProject({
+                    ...project,
+                    visualizer: { ...project.visualizer, effectId: effect.id },
+                  });
                 }
               }}
             />
@@ -184,12 +346,21 @@ export function SlyntEditor() {
 
           <ControlSidebar
             activeCategory={activeCategory}
-            backgroundValues={backgroundValues}
-            onBackgroundImageUpload={handleBackgroundImageUpload}
-            setBackgroundValues={setBackgroundValues}
+            onAssetUpload={handleImageUpload}
+            project={project}
+            selectedEffectId={selectedByCategory[activeCategory]}
+            setProject={setProject}
           />
         </section>
       </div>
     </main>
   );
 }
+
+type RenderJobResponse = {
+  id: string;
+  status: ExportUiState["status"];
+  progress: number;
+  stage: string;
+  error?: string;
+};

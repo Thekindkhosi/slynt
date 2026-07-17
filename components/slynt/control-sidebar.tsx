@@ -1,412 +1,254 @@
-import { Image, Palette, Plus, SlidersHorizontal, Upload, X } from "lucide-react";
-import { useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
-import type {
-  BackgroundValues,
-  EffectCategory,
-  GradientStop,
-} from "@/types/editor";
-import { cn } from "./utils";
+"use client";
+
+import { Image, ListMusic, Palette, Plus, SlidersHorizontal, Type, Upload, X } from "lucide-react";
+import { useRef, type ChangeEvent } from "react";
+import type { EffectCategory, SlyntProject } from "@/types/editor";
 import { ControlSection } from "./control-section";
 import { RangeControl } from "./range-control";
 import { SelectControl } from "./select-control";
+import { ToggleControl } from "./toggle-control";
 
 type ControlSidebarProps = {
   activeCategory: EffectCategory;
-  backgroundValues: BackgroundValues;
-  onBackgroundImageUpload: (file: File) => void;
-  setBackgroundValues: Dispatch<SetStateAction<BackgroundValues>>;
+  onAssetUpload: (file: File, target: "background" | "cover" | "logo") => void;
+  project: SlyntProject;
+  selectedEffectId: string;
+  setProject: (project: SlyntProject) => void;
 };
 
 export function ControlSidebar({
   activeCategory,
-  backgroundValues,
-  onBackgroundImageUpload,
-  setBackgroundValues,
+  onAssetUpload,
+  project,
+  selectedEffectId,
+  setProject,
 }: ControlSidebarProps) {
-  if (activeCategory !== "background") {
-    return (
-      <aside className="flex min-h-0 flex-col rounded-[10px] border border-[var(--border)] bg-[var(--surface)] lg:sticky lg:top-[84px] lg:max-h-[calc(100vh-100px)]">
-        <div className="flex flex-1 items-center justify-center p-6 text-center text-sm text-[var(--text-secondary)]">
-          Please select the effect you want
-        </div>
-      </aside>
-    );
-  }
-
   return (
     <aside className="flex min-h-0 flex-col rounded-[10px] border border-[var(--border)] bg-[var(--surface)] lg:sticky lg:top-[84px] lg:max-h-[calc(100vh-100px)]">
       <div className="border-b border-[var(--border-subtle)] px-4 py-4">
         <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">
           Controls
         </p>
-        <h2 className="text-sm font-medium text-white">Background</h2>
+        <h2 className="text-sm font-medium text-white">{categoryTitle(activeCategory)}</h2>
       </div>
-
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
-        {backgroundValues.mode === "image" ? (
-          <ImageBackgroundControls
-            backgroundValues={backgroundValues}
-            onBackgroundImageUpload={onBackgroundImageUpload}
-            setBackgroundValues={setBackgroundValues}
-          />
+        {activeCategory === "background" ? (
+          <BackgroundControls onAssetUpload={onAssetUpload} project={project} setProject={setProject} />
+        ) : activeCategory === "audio-reactives" ? (
+          <VisualizerControls project={project} setProject={setProject} />
+        ) : activeCategory === "track-progress" ? (
+          <ProgressControls project={project} selectedEffectId={selectedEffectId} setProject={setProject} />
+        ) : activeCategory === "playlist" ? (
+          <PlaylistControls project={project} selectedEffectId={selectedEffectId} setProject={setProject} />
+        ) : activeCategory === "cover" ? (
+          <CoverControls onAssetUpload={onAssetUpload} project={project} setProject={setProject} />
+        ) : activeCategory === "text" ? (
+          <TextControls project={project} setProject={setProject} />
         ) : (
-          <GradientBackgroundControls
-            backgroundValues={backgroundValues}
-            setBackgroundValues={setBackgroundValues}
-          />
+          <LogoControls onAssetUpload={onAssetUpload} project={project} selectedEffectId={selectedEffectId} setProject={setProject} />
         )}
       </div>
     </aside>
   );
 }
 
-function ImageBackgroundControls({
-  backgroundValues,
-  onBackgroundImageUpload,
-  setBackgroundValues,
-}: {
-  backgroundValues: BackgroundValues;
-  onBackgroundImageUpload: (file: File) => void;
-  setBackgroundValues: Dispatch<SetStateAction<BackgroundValues>>;
-}) {
+function BackgroundControls({
+  onAssetUpload,
+  project,
+  setProject,
+}: ControlSidebarPropsSubset & { onAssetUpload: ControlSidebarProps["onAssetUpload"] }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const { image } = backgroundValues;
-
-  const updateImage = (values: Partial<BackgroundValues["image"]>) => {
-    setBackgroundValues((current) => ({
-      ...current,
-      image: {
-        ...current.image,
-        ...values,
-      },
-    }));
-  };
-
   return (
     <>
-      <ControlSection icon={Upload} title="Upload">
-        <input
-          accept="image/*"
-          className="sr-only"
-          onChange={(event) => {
-            const file = event.target.files?.[0];
-            if (file) {
-              onBackgroundImageUpload(file);
-            }
-            event.target.value = "";
-          }}
-          ref={inputRef}
-          type="file"
+      <ControlSection icon={Palette} title="Mode">
+        <SelectControl
+          label="Background"
+          onChange={(value) =>
+            setProject({ ...project, background: { ...project.background, mode: value as SlyntProject["background"]["mode"] } })
+          }
+          options={["template", "gradient", "image"]}
+          value={project.background.mode}
         />
-        <button
-          className="flex h-11 w-full items-center justify-center gap-2 rounded-[7px] border border-[var(--border)] bg-[#070709] text-sm font-medium text-white transition hover:border-[var(--accent)]"
-          onClick={() => inputRef.current?.click()}
-          type="button"
-        >
+        <RangeControl
+          label="Overlay"
+          onChange={(value) => setProject({ ...project, background: { ...project.background, overlayOpacity: value / 100 } })}
+          value={Math.round(project.background.overlayOpacity * 100)}
+        />
+      </ControlSection>
+      <ControlSection icon={Upload} title="Image">
+        <AssetInput inputRef={inputRef} onChange={(file) => onAssetUpload(file, "background")} />
+        <button className="flex h-11 w-full items-center justify-center gap-2 rounded-[7px] border border-[var(--border)] bg-[#070709] text-sm font-medium text-white transition hover:border-[var(--accent)]" onClick={() => inputRef.current?.click()} type="button">
           <Upload className="h-4 w-4" />
-          Upload image
+          Upload background
         </button>
+        <p className="mt-2 truncate text-xs text-[var(--text-secondary)]">{project.background.image.asset?.fileName ?? "No image selected"}</p>
       </ControlSection>
-
-      <ControlSection icon={Image} title="Preview">
-        <div className="aspect-video overflow-hidden rounded-[7px] border border-[var(--border)] bg-[#050506]">
-          {image.url ? (
-            <div
-              aria-label={
-                image.name ? `Preview of ${image.name}` : "Background preview"
-              }
-              className="h-full w-full bg-cover bg-center"
-              role="img"
-              style={{ backgroundImage: `url(${image.url})` }}
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center text-xs text-[var(--text-muted)]">
-              No image selected
-            </div>
-          )}
-        </div>
-        {image.name ? (
-          <p className="mt-2 truncate text-xs text-[var(--text-secondary)]">
-            {image.name}
-          </p>
-        ) : null}
-      </ControlSection>
-
-      <ControlSection icon={SlidersHorizontal} title="Image editing">
-        <div className="space-y-4">
-          <SelectControl
-            label="Fit"
-            onChange={(value) =>
-              updateImage({ fit: value as BackgroundValues["image"]["fit"] })
-            }
-            options={["cover", "contain", "fill"]}
-            value={image.fit}
-          />
-          <RangeControl
-            label="Scale"
-            max={160}
-            min={60}
-            onChange={(value) => updateImage({ scale: value })}
-            value={image.scale}
-          />
-          <RangeControl
-            label="Position X"
-            onChange={(value) => updateImage({ positionX: value })}
-            value={image.positionX}
-          />
-          <RangeControl
-            label="Position Y"
-            onChange={(value) => updateImage({ positionY: value })}
-            value={image.positionY}
-          />
-          <RangeControl
-            label="Opacity"
-            onChange={(value) => updateImage({ opacity: value })}
-            value={image.opacity}
-          />
-          <RangeControl
-            label="Brightness"
-            max={160}
-            min={40}
-            onChange={(value) => updateImage({ brightness: value })}
-            value={image.brightness}
-          />
-          <RangeControl
-            label="Contrast"
-            max={180}
-            min={40}
-            onChange={(value) => updateImage({ contrast: value })}
-            value={image.contrast}
-          />
-          <RangeControl
-            label="Blur"
-            max={24}
-            onChange={(value) => updateImage({ blur: value })}
-            suffix="px"
-            value={image.blur}
-          />
-        </div>
+      <ControlSection icon={SlidersHorizontal} title="Image edit">
+        <RangeControl label="Opacity" onChange={(value) => setProject({ ...project, background: { ...project.background, image: { ...project.background.image, opacity: value / 100 } } })} value={Math.round(project.background.image.opacity * 100)} />
+        <RangeControl label="Brightness" max={180} min={40} onChange={(value) => setProject({ ...project, background: { ...project.background, image: { ...project.background.image, brightness: value / 100 } } })} value={Math.round(project.background.image.brightness * 100)} />
+        <RangeControl label="Blur" max={40} suffix="px" onChange={(value) => setProject({ ...project, background: { ...project.background, image: { ...project.background.image, blur: value } } })} value={project.background.image.blur} />
       </ControlSection>
     </>
   );
 }
 
-function GradientBackgroundControls({
-  backgroundValues,
-  setBackgroundValues,
-}: {
-  backgroundValues: BackgroundValues;
-  setBackgroundValues: Dispatch<SetStateAction<BackgroundValues>>;
-}) {
-  const [showColorCreator, setShowColorCreator] = useState(false);
-  const [draftColor, setDraftColor] = useState("#22c55e");
-  const stops = backgroundValues.gradient.stops;
-  const activeStop = useMemo(
-    () =>
-      stops.find((stop) => stop.id === backgroundValues.gradient.activeStopId) ??
-      stops[0],
-    [backgroundValues.gradient.activeStopId, stops],
-  );
-
-  const addStop = () => {
-    const color = normalizeHex(draftColor);
-
-    if (!color) {
-      return;
-    }
-
-    const id = `stop-${Date.now()}`;
-    setBackgroundValues((current) => ({
-      ...current,
-      gradient: {
-        activeStopId: id,
-        stops: [
-          ...current.gradient.stops,
-          {
-            id,
-            blur: 20,
-            color,
-            positionX: 50,
-            positionY: 50,
-            size: 34,
-          },
-        ],
-      },
-    }));
-    setShowColorCreator(false);
-  };
-
-  const updateActiveStop = (values: Partial<GradientStop>) => {
-    if (!activeStop) {
-      return;
-    }
-
-    setBackgroundValues((current) => ({
-      ...current,
-      gradient: {
-        ...current.gradient,
-        stops: current.gradient.stops.map((stop) =>
-          stop.id === activeStop.id ? { ...stop, ...values } : stop,
-        ),
-      },
-    }));
-  };
-
-  const removeActiveStop = () => {
-    if (!activeStop || stops.length <= 1) {
-      return;
-    }
-
-    setBackgroundValues((current) => {
-      const nextStops = current.gradient.stops.filter(
-        (stop) => stop.id !== activeStop.id,
-      );
-
-      return {
-        ...current,
-        gradient: {
-          activeStopId: nextStops[0].id,
-          stops: nextStops,
-        },
-      };
-    });
-  };
+function VisualizerControls({ project, setProject }: ControlSidebarPropsSubset) {
+  const update = (values: Partial<SlyntProject["visualizer"]>) =>
+    setProject({ ...project, visualizer: { ...project.visualizer, ...values } });
 
   return (
     <>
-      <ControlSection icon={Palette} title="Palette">
-        <div className="flex flex-wrap gap-2">
-          {stops.map((stop) => {
-            const active = stop.id === activeStop?.id;
-
-            return (
-              <button
-                aria-label={`Select ${stop.color}`}
-                className={cn(
-                  "h-10 w-10 rounded-full border transition",
-                  active
-                    ? "border-white shadow-[0_0_0_3px_rgba(139,92,246,0.32)]"
-                    : "border-white/15 hover:border-white/45",
-                )}
-                key={stop.id}
-                onClick={() =>
-                  setBackgroundValues((current) => ({
-                    ...current,
-                    gradient: {
-                      ...current.gradient,
-                      activeStopId: stop.id,
-                    },
-                  }))
-                }
-                style={{ backgroundColor: stop.color }}
-                type="button"
-              />
-            );
-          })}
-
-          <button
-            aria-expanded={showColorCreator}
-            aria-label="Add color"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-[var(--border)] text-[var(--text-secondary)] transition hover:border-[var(--accent)] hover:text-white"
-            onClick={() => setShowColorCreator((current) => !current)}
-            type="button"
-          >
-            <Plus className="h-4 w-4" />
-          </button>
-        </div>
-
-        {showColorCreator ? (
-          <div className="mt-4 rounded-[7px] border border-[var(--border)] bg-[#070709] p-3">
-            <div className="flex gap-2">
-              <input
-                aria-label="Pick gradient color"
-                className="h-10 w-12 shrink-0 rounded-[7px] border border-[var(--border)] bg-transparent p-1"
-                onChange={(event) => setDraftColor(event.target.value)}
-                type="color"
-                value={normalizeHex(draftColor) ?? "#22c55e"}
-              />
-              <input
-                aria-label="Gradient color hex"
-                className="h-10 min-w-0 flex-1 rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] px-3 font-mono text-sm uppercase text-white outline-none focus:border-[var(--accent)]"
-                onChange={(event) => setDraftColor(event.target.value)}
-                value={draftColor}
-              />
-              <button
-                className="flex h-10 w-10 items-center justify-center rounded-[7px] bg-[var(--accent)] text-white"
-                onClick={addStop}
-                type="button"
-              >
-                <Plus className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-        ) : null}
+      <ControlSection icon={SlidersHorizontal} title="Template">
+        <SelectControl label="Template" onChange={(value) => setProject({ ...project, templateId: value as SlyntProject["templateId"] })} options={["editorial-grid", "wireframe-terrain"]} value={project.templateId} />
       </ControlSection>
-
-      {activeStop ? (
-        <ControlSection icon={SlidersHorizontal} title="Selected color">
-          <div className="mb-4 flex items-center gap-3">
-            <input
-              aria-label="Selected color"
-              className="h-10 w-12 rounded-[7px] border border-[var(--border)] bg-transparent p-1"
-              onChange={(event) => updateActiveStop({ color: event.target.value })}
-              type="color"
-              value={activeStop.color}
-            />
-            <input
-              aria-label="Selected color hex"
-              className="h-10 min-w-0 flex-1 rounded-[7px] border border-[var(--border)] bg-[#070709] px-3 font-mono text-sm uppercase text-white outline-none focus:border-[var(--accent)]"
-              onChange={(event) => {
-                const color = normalizeHex(event.target.value);
-                if (color) {
-                  updateActiveStop({ color });
-                }
-              }}
-              value={activeStop.color}
-            />
-            <button
-              aria-label="Remove selected color"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[7px] border border-[var(--border)] text-[var(--text-secondary)] transition hover:border-red-400/50 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-40"
-              disabled={stops.length <= 1}
-              onClick={removeActiveStop}
-              type="button"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-
-          <RangeControl
-            label="Color size"
-            max={100}
-            min={10}
-            onChange={(value) => updateActiveStop({ size: value })}
-            value={activeStop.size}
-          />
-          <RangeControl
-            label="Position X"
-            onChange={(value) => updateActiveStop({ positionX: value })}
-            value={activeStop.positionX}
-          />
-          <RangeControl
-            label="Position Y"
-            onChange={(value) => updateActiveStop({ positionY: value })}
-            value={activeStop.positionY}
-          />
-          <RangeControl
-            label="Blur"
-            max={60}
-            onChange={(value) => updateActiveStop({ blur: value })}
-            suffix="px"
-            value={activeStop.blur}
-          />
-        </ControlSection>
-      ) : null}
+      <ControlSection icon={SlidersHorizontal} title="Motion">
+        <RangeControl label="Sensitivity" max={200} min={10} onChange={(value) => update({ sensitivity: value / 100 })} value={Math.round(project.visualizer.sensitivity * 100)} />
+        <RangeControl label="Intensity" max={200} min={10} onChange={(value) => update({ intensity: value / 100 })} value={Math.round(project.visualizer.intensity * 100)} />
+        <RangeControl label="Height" max={200} min={10} onChange={(value) => update({ height: value / 100 })} value={Math.round(project.visualizer.height * 100)} />
+        <RangeControl label="Density" max={160} min={8} onChange={(value) => update({ density: value })} value={project.visualizer.density} />
+        <RangeControl label="Speed" max={200} min={0} onChange={(value) => update({ speed: value / 100 })} value={Math.round(project.visualizer.speed * 100)} />
+      </ControlSection>
+      <ControlSection icon={Palette} title="Glow">
+        <ToggleControl checked={project.visualizer.glowEnabled} label="Enable glow" onCheckedChange={(checked) => update({ glowEnabled: checked })} />
+        <RangeControl label="Glow blur" max={80} suffix="px" onChange={(value) => update({ glowBlur: value })} value={project.visualizer.glowBlur} />
+      </ControlSection>
     </>
   );
 }
 
-function normalizeHex(value: string) {
-  const trimmed = value.trim();
-  const withHash = trimmed.startsWith("#") ? trimmed : `#${trimmed}`;
-  return /^#[0-9a-fA-F]{6}$/.test(withHash) ? withHash.toLowerCase() : null;
+function ProgressControls({ project, selectedEffectId, setProject }: ControlSidebarPropsSubset & { selectedEffectId: string }) {
+  const style = normalizeProgressStyle(selectedEffectId);
+  if (style !== project.progress.style) {
+    setTimeout(() => setProject({ ...project, progress: { ...project.progress, style } }), 0);
+  }
+
+  return (
+    <ControlSection icon={SlidersHorizontal} title="Progress">
+      <SelectControl label="Style" onChange={(value) => setProject({ ...project, progress: { ...project.progress, style: value as SlyntProject["progress"]["style"] } })} options={["minimal-line", "circular-progress", "segmented-timeline", "waveform-timeline", "time-counter"]} value={project.progress.style} />
+      <ToggleControl checked={project.progress.showElapsed} label="Show elapsed" onCheckedChange={(checked) => setProject({ ...project, progress: { ...project.progress, showElapsed: checked } })} />
+      <ToggleControl checked={project.progress.showRemaining} label="Show remaining" onCheckedChange={(checked) => setProject({ ...project, progress: { ...project.progress, showRemaining: checked } })} />
+      <ToggleControl checked={project.progress.showChapterMarkers} label="Chapter markers" onCheckedChange={(checked) => setProject({ ...project, progress: { ...project.progress, showChapterMarkers: checked } })} />
+    </ControlSection>
+  );
 }
+
+function PlaylistControls({ project, selectedEffectId, setProject }: ControlSidebarPropsSubset & { selectedEffectId: string }) {
+  const mode = normalizePlaylistMode(selectedEffectId);
+  const updateChapter = (id: string, values: Partial<SlyntProject["playlist"]["chapters"][number]>) =>
+    setProject({ ...project, playlist: { ...project.playlist, chapters: project.playlist.chapters.map((chapter) => chapter.id === id ? { ...chapter, ...values } : chapter) } });
+
+  return (
+    <>
+      <ControlSection icon={ListMusic} title="Display">
+        <SelectControl label="Mode" onChange={(value) => setProject({ ...project, playlist: { ...project.playlist, displayMode: value as SlyntProject["playlist"]["displayMode"] } })} options={["hidden", "current-track", "compact-queue", "side-queue", "up-next"]} value={project.playlist.displayMode === mode ? project.playlist.displayMode : mode} />
+      </ControlSection>
+      {project.playlist.chapters.map((chapter, index) => (
+        <ControlSection icon={ListMusic} key={chapter.id} title={`Chapter ${index + 1}`}>
+          <TextInput label="Title" onChange={(title) => updateChapter(chapter.id, { title })} value={chapter.title} />
+          <TextInput label="Artist" onChange={(artist) => updateChapter(chapter.id, { artist })} value={chapter.artist} />
+          <RangeControl label="Start" max={Math.max(1, Math.round(project.canvas.durationInSeconds))} suffix="s" onChange={(startTimeSeconds) => updateChapter(chapter.id, { startTimeSeconds })} value={Math.round(chapter.startTimeSeconds)} />
+        </ControlSection>
+      ))}
+      <button className="flex h-10 w-full items-center justify-center gap-2 rounded-[7px] border border-[var(--border)] text-sm text-white" onClick={() => setProject({ ...project, playlist: { ...project.playlist, chapters: [...project.playlist.chapters, { id: crypto.randomUUID(), title: "New chapter", artist: project.track.artist, startTimeSeconds: Math.min(project.canvas.durationInSeconds, project.playlist.chapters.length * 60) }] } })} type="button">
+        <Plus className="h-4 w-4" /> Add chapter
+      </button>
+    </>
+  );
+}
+
+function CoverControls({ onAssetUpload, project, setProject }: ControlSidebarPropsSubset & { onAssetUpload: ControlSidebarProps["onAssetUpload"] }) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  return (
+    <>
+      <ControlSection icon={Upload} title="Cover">
+        <AssetInput inputRef={inputRef} onChange={(file) => onAssetUpload(file, "cover")} />
+        <button className="flex h-11 w-full items-center justify-center gap-2 rounded-[7px] border border-[var(--border)] bg-[#070709] text-sm font-medium text-white transition hover:border-[var(--accent)]" onClick={() => inputRef.current?.click()} type="button">
+          <Upload className="h-4 w-4" /> Upload cover
+        </button>
+        {project.track.cover ? <button className="mt-2 flex h-9 w-full items-center justify-center gap-2 rounded-[7px] border border-[var(--border)] text-xs text-white" onClick={() => setProject({ ...project, track: { ...project.track, cover: null } })} type="button"><X className="h-3.5 w-3.5" /> Remove cover</button> : null}
+      </ControlSection>
+      <TrackControls project={project} setProject={setProject} />
+    </>
+  );
+}
+
+function TextControls({ project, setProject }: ControlSidebarPropsSubset) {
+  return (
+    <ControlSection icon={Type} title="Typography">
+      <TextInput label="Title" onChange={(title) => setProject({ ...project, typography: { ...project.typography, title }, track: { ...project.track, title } })} value={project.typography.title} />
+      <TextInput label="Artist" onChange={(artist) => setProject({ ...project, typography: { ...project.typography, artist }, track: { ...project.track, artist } })} value={project.typography.artist} />
+      <TextInput label="Custom text" onChange={(customText) => setProject({ ...project, typography: { ...project.typography, customText } })} value={project.typography.customText} />
+      <ToggleControl checked={project.typography.showTitle} label="Show title" onCheckedChange={(checked) => setProject({ ...project, typography: { ...project.typography, showTitle: checked } })} />
+      <ToggleControl checked={project.typography.showArtist} label="Show artist" onCheckedChange={(checked) => setProject({ ...project, typography: { ...project.typography, showArtist: checked } })} />
+      <ToggleControl checked={project.typography.showCustomText} label="Show custom" onCheckedChange={(checked) => setProject({ ...project, typography: { ...project.typography, showCustomText: checked } })} />
+      <RangeControl label="Title scale" max={200} min={50} onChange={(value) => setProject({ ...project, typography: { ...project.typography, titleScale: value / 100 } })} value={Math.round(project.typography.titleScale * 100)} />
+    </ControlSection>
+  );
+}
+
+function LogoControls({ onAssetUpload, project, selectedEffectId, setProject }: ControlSidebarPropsSubset & { onAssetUpload: ControlSidebarProps["onAssetUpload"]; selectedEffectId: string }) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const placement = normalizeLogoPlacement(selectedEffectId);
+  return (
+    <>
+      <ControlSection icon={Upload} title="Logo">
+        <AssetInput inputRef={inputRef} onChange={(file) => onAssetUpload(file, "logo")} />
+        <button className="flex h-11 w-full items-center justify-center gap-2 rounded-[7px] border border-[var(--border)] bg-[#070709] text-sm font-medium text-white transition hover:border-[var(--accent)]" onClick={() => inputRef.current?.click()} type="button"><Upload className="h-4 w-4" /> Upload logo</button>
+      </ControlSection>
+      <ControlSection icon={Image} title="Placement">
+        <SelectControl label="Placement" onChange={(value) => setProject({ ...project, logo: { ...project.logo, placement: value as SlyntProject["logo"]["placement"] } })} options={["hidden", "center", "bottom-left", "bottom-right", "watermark"]} value={project.logo.placement === placement ? project.logo.placement : placement} />
+        <RangeControl label="Opacity" onChange={(value) => setProject({ ...project, logo: { ...project.logo, opacity: value / 100 } })} value={Math.round(project.logo.opacity * 100)} />
+        <RangeControl label="Scale" max={200} min={10} onChange={(value) => setProject({ ...project, logo: { ...project.logo, scale: value / 100 } })} value={Math.round(project.logo.scale * 100)} />
+      </ControlSection>
+    </>
+  );
+}
+
+function TrackControls({ project, setProject }: ControlSidebarPropsSubset) {
+  return (
+    <ControlSection icon={Type} title="Track">
+      <TextInput label="Track title" onChange={(title) => setProject({ ...project, track: { ...project.track, title }, typography: { ...project.typography, title } })} value={project.track.title} />
+      <TextInput label="Artist" onChange={(artist) => setProject({ ...project, track: { ...project.track, artist }, typography: { ...project.typography, artist } })} value={project.track.artist} />
+    </ControlSection>
+  );
+}
+
+function AssetInput({ inputRef, onChange }: { inputRef: React.RefObject<HTMLInputElement | null>; onChange: (file: File) => void }) {
+  return <input accept="image/*" className="sr-only" onChange={(event: ChangeEvent<HTMLInputElement>) => { const file = event.target.files?.[0]; if (file) onChange(file); event.target.value = ""; }} ref={inputRef} type="file" />;
+}
+
+function TextInput({ label, onChange, value }: { label: string; onChange: (value: string) => void; value: string }) {
+  const id = `input-${label.toLowerCase().replace(/\s+/g, "-")}`;
+  return (
+    <label className="mb-3 block text-xs text-[var(--text-secondary)]" htmlFor={id}>
+      {label}
+      <input className="mt-2 h-10 w-full rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] px-3 text-sm text-white outline-none focus:border-[var(--accent)]" id={id} onChange={(event) => onChange(event.target.value)} value={value} />
+    </label>
+  );
+}
+
+type ControlSidebarPropsSubset = Pick<ControlSidebarProps, "project" | "setProject">;
+
+function categoryTitle(category: EffectCategory) {
+  return category.split("-").map((part) => part[0].toUpperCase() + part.slice(1)).join(" ");
+}
+
+function normalizeProgressStyle(effectId: string): SlyntProject["progress"]["style"] {
+  return ["minimal-line", "circular-progress", "segmented-timeline", "waveform-timeline", "time-counter"].includes(effectId) ? effectId as SlyntProject["progress"]["style"] : "minimal-line";
+}
+
+function normalizePlaylistMode(effectId: string): SlyntProject["playlist"]["displayMode"] {
+  return effectId === "playlist-hidden" ? "hidden" : ["current-track", "compact-queue", "side-queue", "up-next"].includes(effectId) ? effectId as SlyntProject["playlist"]["displayMode"] : "current-track";
+}
+
+function normalizeLogoPlacement(effectId: string): SlyntProject["logo"]["placement"] {
+  const map: Record<string, SlyntProject["logo"]["placement"]> = {
+    "bottom-left-logo": "bottom-left",
+    "bottom-right-logo": "bottom-right",
+    "center-logo": "center",
+    "logo-hidden": "hidden",
+    watermark: "watermark",
+  };
+  return map[effectId] ?? "hidden";
+}
+
