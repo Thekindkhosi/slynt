@@ -40,4 +40,14 @@ export type ExportValues = {
   resolution: string;
   frameRate: string;
   aspectRatio: string;
+  videoFormat: string;
+  quality: string;
+};
+
+export type SceneValues = {
+  backgroundBrightness: number;
+  cameraMovement: number;
+  motionAmount: number;
+  particleDensity: number;
+  sceneBlur: number;
 };

@@ -22,6 +22,7 @@ import type {
   EffectCategory,
   ExportValues,
   Icon,
+  SceneValues,
 } from "@/types/editor";
 import { ControlSection } from "./control-section";
 import { ExportSettings } from "./export-settings";
@@ -35,8 +36,10 @@ type ControlSidebarProps = {
   effect: Effect;
   controlValues: ControlValues;
   exportValues: ExportValues;
+  sceneValues: SceneValues;
   setControlValues: (values: ControlValues) => void;
   setExportValues: (values: ExportValues) => void;
+  setSceneValues: (values: SceneValues) => void;
   selectedVisualizer: string;
   setSelectedVisualizer: (id: string) => void;
   setTransparent: (value: boolean) => void;
@@ -74,8 +77,10 @@ export function ControlSidebar({
   effect,
   controlValues,
   exportValues,
+  sceneValues,
   setControlValues,
   setExportValues,
+  setSceneValues,
   selectedVisualizer,
   setSelectedVisualizer,
   setTransparent,
@@ -96,6 +101,9 @@ export function ControlSidebar({
 
   const updateValue = (key: keyof ControlValues, value: number | boolean) => {
     setControlValues({ ...controlValues, [key]: value });
+  };
+  const updateSceneValue = (key: keyof SceneValues, value: number) => {
+    setSceneValues({ ...sceneValues, [key]: value });
   };
   const toggleSection = (category: EffectCategory) => {
     setOpenSections((current) => ({
@@ -201,23 +209,34 @@ export function ControlSidebar({
           </>
         ) : (
           <>
-            <ControlSection icon={Layers3} title="Style">
-              <div className="grid grid-cols-4 gap-2">
-                {["#8b5cf6", "#38bdf8", "#4ade80", "#f5f5f7"].map((color) => (
-                  <button
-                    aria-label={`Color ${color}`}
-                    className={cn(
-                      "h-10 rounded-[7px] border transition hover:scale-[1.02]",
-                      color === effect.accent
-                        ? "border-white"
-                        : "border-[var(--border)]",
-                    )}
-                    key={color}
-                    style={{ backgroundColor: color }}
-                    type="button"
-                  />
-                ))}
-              </div>
+            <ControlSection icon={Layers3} title="Scene Settings">
+              <RangeControl
+                label="Background brightness"
+                onChange={(value) =>
+                  updateSceneValue("backgroundBrightness", value)
+                }
+                value={sceneValues.backgroundBrightness}
+              />
+              <RangeControl
+                label="Camera movement"
+                onChange={(value) => updateSceneValue("cameraMovement", value)}
+                value={sceneValues.cameraMovement}
+              />
+              <RangeControl
+                label="Motion amount"
+                onChange={(value) => updateSceneValue("motionAmount", value)}
+                value={sceneValues.motionAmount}
+              />
+              <RangeControl
+                label="Particle density"
+                onChange={(value) => updateSceneValue("particleDensity", value)}
+                value={sceneValues.particleDensity}
+              />
+              <RangeControl
+                label="Scene blur"
+                onChange={(value) => updateSceneValue("sceneBlur", value)}
+                value={sceneValues.sceneBlur}
+              />
               <label className="mt-3 flex items-center justify-between rounded-[8px] border border-[var(--border-subtle)] bg-[var(--surface-secondary)] px-3 py-3 text-sm text-[var(--text-secondary)]">
                 Transparent background
                 <input

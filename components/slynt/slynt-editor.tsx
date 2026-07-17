@@ -2,7 +2,12 @@
 
 import { useMemo, useState } from "react";
 import { effects } from "@/data/effects";
-import type { ControlValues, EffectCategory, ExportValues } from "@/types/editor";
+import type {
+  ControlValues,
+  EffectCategory,
+  ExportValues,
+  SceneValues,
+} from "@/types/editor";
 import { ControlSidebar } from "./control-sidebar";
 import { EffectsBrowser } from "./effects-browser";
 import { PreviewStage } from "./preview-stage";
@@ -43,6 +48,15 @@ export function SlyntEditor() {
     resolution: "1280 × 720 (HD)",
     frameRate: "30 FPS",
     aspectRatio: "16:9",
+    videoFormat: "MP4",
+    quality: "High",
+  });
+  const [sceneValues, setSceneValues] = useState<SceneValues>({
+    backgroundBrightness: 52,
+    cameraMovement: 18,
+    motionAmount: 58,
+    particleDensity: 42,
+    sceneBlur: 12,
   });
   const [transparent, setTransparent] = useState(false);
 
@@ -67,7 +81,7 @@ export function SlyntEditor() {
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--text-primary)]">
       <div className="mx-auto flex min-h-screen w-full max-w-[1720px] flex-col px-4 py-3 sm:px-6 lg:px-8">
-        <TopNavigation />
+        <TopNavigation exportValues={exportValues} />
 
         <section className="grid flex-1 gap-4 py-4 xl:grid-cols-[minmax(0,1fr)_390px] lg:grid-cols-[minmax(0,1fr)_350px]">
           <div className="flex min-w-0 flex-col gap-4">
@@ -112,8 +126,10 @@ export function SlyntEditor() {
             controlValues={controlValues}
             effect={inspectedEffect}
             exportValues={exportValues}
+            sceneValues={sceneValues}
             setControlValues={setControlValues}
             setExportValues={setExportValues}
+            setSceneValues={setSceneValues}
             selectedVisualizer={selectedVisualizer}
             setSelectedVisualizer={(id) => {
               setSelectedVisualizer(id);

@@ -1,8 +1,18 @@
-import { ChevronDown, Download, Waves } from "lucide-react";
+"use client";
 
-export function TopNavigation() {
+import { ChevronDown, Download, Waves } from "lucide-react";
+import { useState } from "react";
+import type { ExportValues } from "@/types/editor";
+
+type TopNavigationProps = {
+  exportValues: ExportValues;
+};
+
+export function TopNavigation({ exportValues }: TopNavigationProps) {
+  const [exportOpen, setExportOpen] = useState(false);
+
   return (
-    <header className="flex min-h-14 items-center justify-between gap-3 border-b border-[var(--border-subtle)]">
+    <header className="relative flex min-h-14 items-center justify-between gap-3 border-b border-[var(--border-subtle)]">
       <div className="flex items-center gap-3">
         <div className="flex h-8 w-8 items-center justify-center rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)]">
           <Waves className="h-4 w-4 text-[var(--accent)]" strokeWidth={2.2} />
@@ -12,14 +22,49 @@ export function TopNavigation() {
         </h1>
       </div>
 
-      <button
-        className="flex h-9 items-center gap-2 rounded-[7px] bg-[var(--accent)] px-3 text-xs font-semibold text-white transition hover:bg-[var(--accent-hover)]"
-        type="button"
-      >
-        <Download className="h-3.5 w-3.5" />
-        <span>Export Video</span>
-        <ChevronDown className="h-3.5 w-3.5 opacity-80" />
-      </button>
+      <div className="relative">
+        <button
+          aria-expanded={exportOpen}
+          className="flex h-9 items-center gap-2 rounded-[7px] bg-[var(--accent)] px-3 text-xs font-semibold text-white transition hover:bg-[var(--accent-hover)]"
+          onClick={() => setExportOpen((open) => !open)}
+          type="button"
+        >
+          <Download className="h-3.5 w-3.5" />
+          <span>Export Video</span>
+          <ChevronDown className="h-3.5 w-3.5 opacity-80" />
+        </button>
+
+        {exportOpen ? (
+          <div className="absolute right-0 top-11 z-20 w-72 rounded-[8px] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-2xl shadow-black/40">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">
+              Export Summary
+            </p>
+            <div className="mt-3 space-y-2 text-sm">
+              <SummaryRow label="Resolution" value={exportValues.resolution} />
+              <SummaryRow label="Frame rate" value={exportValues.frameRate} />
+              <SummaryRow label="Aspect ratio" value={exportValues.aspectRatio} />
+              <SummaryRow label="Format" value={exportValues.videoFormat} />
+              <SummaryRow label="Quality" value={exportValues.quality} />
+            </div>
+            <button
+              className="mt-4 flex h-9 w-full items-center justify-center gap-2 rounded-[7px] bg-[var(--accent)] text-xs font-semibold text-white transition hover:bg-[var(--accent-hover)]"
+              type="button"
+            >
+              <Download className="h-3.5 w-3.5" />
+              Mock export
+            </button>
+          </div>
+        ) : null}
+      </div>
     </header>
+  );
+}
+
+function SummaryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <span className="text-[var(--text-muted)]">{label}</span>
+      <span className="text-right font-medium text-white">{value}</span>
+    </div>
   );
 }
