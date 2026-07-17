@@ -2,7 +2,14 @@ import type { ComponentType, SVGProps } from "react";
 
 export type Icon = ComponentType<SVGProps<SVGSVGElement>>;
 
-export type EffectCategory = "Core" | "Motion" | "Reactive" | "Texture";
+export type EffectCategory =
+  | "background"
+  | "audio-reactives"
+  | "track-progress"
+  | "playlist"
+  | "cover"
+  | "text"
+  | "logo";
 
 export type Effect = {
   id: string;
@@ -12,17 +19,25 @@ export type Effect = {
   icon: Icon;
   accent: string;
   intensity: number;
-  motion: number;
-  bloom: number;
+  speed: number;
+  glowIntensity: number;
   density: number;
 };
 
-export type EffectValues = Record<
-  "intensity" | "motion" | "bloom" | "density",
-  number
->;
+export type ControlValues = {
+  intensity: number;
+  sensitivity: number;
+  barHeight: number;
+  speed: number;
+  smoothing: number;
+  density: number;
+  glowEnabled: boolean;
+  glowIntensity: number;
+  glowBlur: number;
+};
 
-export type ExportPreset = {
-  label: string;
-  value: string;
+export type ExportValues = {
+  resolution: string;
+  frameRate: string;
+  aspectRatio: string;
 };

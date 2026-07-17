@@ -13,6 +13,7 @@ type PlaybackControlsProps = {
   loop: boolean;
   setIsPlaying: (value: boolean) => void;
   setLoop: (value: boolean) => void;
+  volume: number;
 };
 
 function IconButton({
@@ -39,6 +40,7 @@ export function PlaybackControls({
   loop,
   setIsPlaying,
   setLoop,
+  volume,
 }: PlaybackControlsProps) {
   return (
     <div className="flex items-center gap-2">
@@ -69,6 +71,9 @@ export function PlaybackControls({
         <Shuffle className="h-3.5 w-3.5" />
         Loop
       </button>
+      <span className="hidden rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] px-3 py-2 font-mono text-xs text-[var(--text-secondary)] sm:inline-flex">
+        {volume}%
+      </span>
     </div>
   );
 }

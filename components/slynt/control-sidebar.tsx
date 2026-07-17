@@ -9,7 +9,7 @@ import {
   Wand2,
   Zap,
 } from "lucide-react";
-import type { Effect, EffectValues, ExportPreset, Icon } from "@/types/editor";
+import type { ControlValues, Effect, ExportValues, Icon } from "@/types/editor";
 import { ControlSection } from "./control-section";
 import { ExportSettings } from "./export-settings";
 import { RangeControl } from "./range-control";
@@ -18,29 +18,25 @@ import { cn } from "./utils";
 
 type ControlSidebarProps = {
   effect: Effect;
-  effectValues: EffectValues;
-  exportPreset: ExportPreset;
-  loop: boolean;
-  setEffectValues: (values: EffectValues) => void;
-  setExportPreset: (preset: ExportPreset) => void;
-  setLoop: (value: boolean) => void;
+  controlValues: ControlValues;
+  exportValues: ExportValues;
+  setControlValues: (values: ControlValues) => void;
+  setExportValues: (values: ExportValues) => void;
   setTransparent: (value: boolean) => void;
   transparent: boolean;
 };
 
 export function ControlSidebar({
   effect,
-  effectValues,
-  exportPreset,
-  loop,
-  setEffectValues,
-  setExportPreset,
-  setLoop,
+  controlValues,
+  exportValues,
+  setControlValues,
+  setExportValues,
   setTransparent,
   transparent,
 }: ControlSidebarProps) {
-  const updateValue = (key: keyof EffectValues, value: number) => {
-    setEffectValues({ ...effectValues, [key]: value });
+  const updateValue = (key: keyof ControlValues, value: number | boolean) => {
+    setControlValues({ ...controlValues, [key]: value });
   };
 
   return (
@@ -60,22 +56,32 @@ export function ControlSidebar({
           <RangeControl
             label="Intensity"
             onChange={(value) => updateValue("intensity", value)}
-            value={effectValues.intensity}
+            value={controlValues.intensity}
           />
           <RangeControl
-            label="Motion"
-            onChange={(value) => updateValue("motion", value)}
-            value={effectValues.motion}
+            label="Sensitivity"
+            onChange={(value) => updateValue("sensitivity", value)}
+            value={controlValues.sensitivity}
           />
           <RangeControl
-            label="Bloom"
-            onChange={(value) => updateValue("bloom", value)}
-            value={effectValues.bloom}
+            label="Bar Height"
+            onChange={(value) => updateValue("barHeight", value)}
+            value={controlValues.barHeight}
+          />
+          <RangeControl
+            label="Speed"
+            onChange={(value) => updateValue("speed", value)}
+            value={controlValues.speed}
+          />
+          <RangeControl
+            label="Smoothing"
+            onChange={(value) => updateValue("smoothing", value)}
+            value={controlValues.smoothing}
           />
           <RangeControl
             label="Density"
             onChange={(value) => updateValue("density", value)}
-            value={effectValues.density}
+            value={controlValues.density}
           />
         </ControlSection>
 
@@ -83,13 +89,25 @@ export function ControlSidebar({
           <div className="grid grid-cols-2 gap-2">
             <ToggleControl active icon={Zap} label="Beat sync" />
             <ToggleControl
-              active={loop}
+              active={controlValues.glowEnabled}
               icon={RotateCcw}
-              label="Loop phase"
-              onClick={() => setLoop(!loop)}
+              label="Glow"
+              onClick={() => updateValue("glowEnabled", !controlValues.glowEnabled)}
             />
             <ToggleControl active icon={Gauge} label="Peak hold" />
             <ToggleControl icon={Lock} label="Lock seed" />
+          </div>
+          <div className="mt-4">
+            <RangeControl
+              label="Glow Intensity"
+              onChange={(value) => updateValue("glowIntensity", value)}
+              value={controlValues.glowIntensity}
+            />
+            <RangeControl
+              label="Glow Blur"
+              onChange={(value) => updateValue("glowBlur", value)}
+              value={controlValues.glowBlur}
+            />
           </div>
         </ControlSection>
 
@@ -123,8 +141,8 @@ export function ControlSidebar({
 
         <ControlSection icon={Download} title="Export Settings">
           <ExportSettings
-            exportPreset={exportPreset}
-            setExportPreset={setExportPreset}
+            exportValues={exportValues}
+            setExportValues={setExportValues}
           />
         </ControlSection>
       </div>

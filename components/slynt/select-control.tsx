@@ -1,11 +1,10 @@
 import { ChevronDown } from "lucide-react";
-import type { ExportPreset } from "@/types/editor";
 
 type SelectControlProps = {
   label: string;
-  onChange: (preset: ExportPreset) => void;
-  options: ExportPreset[];
-  value: ExportPreset;
+  onChange: (value: string) => void;
+  options: string[];
+  value: string;
 };
 
 export function SelectControl({
@@ -22,16 +21,11 @@ export function SelectControl({
       <div className="relative">
         <select
           className="h-10 w-full appearance-none rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] px-3 text-sm text-white outline-none transition focus:border-[var(--accent)]"
-          onChange={(event) => {
-            const preset =
-              options.find((item) => item.label === event.target.value) ??
-              options[0];
-            onChange(preset);
-          }}
-          value={value.label}
+          onChange={(event) => onChange(event.target.value)}
+          value={value}
         >
-          {options.map((preset) => (
-            <option key={preset.label}>{preset.label}</option>
+          {options.map((option) => (
+            <option key={option}>{option}</option>
           ))}
         </select>
         <ChevronDown className="pointer-events-none absolute right-3 top-3 h-4 w-4 text-[var(--text-muted)]" />

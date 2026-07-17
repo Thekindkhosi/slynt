@@ -7,7 +7,7 @@ type CanvasVisualizerProps = {
   density: number;
   intensity: number;
   isPlaying: boolean;
-  motion: number;
+  speed: number;
 };
 
 export function CanvasVisualizer({
@@ -15,7 +15,7 @@ export function CanvasVisualizer({
   density,
   intensity,
   isPlaying,
-  motion,
+  speed,
 }: CanvasVisualizerProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -56,7 +56,7 @@ export function CanvasVisualizer({
 
       context.save();
       context.translate(centerX, centerY);
-      context.rotate(frame * 0.0018 * (motion / 42));
+      context.rotate(frame * 0.0018 * (speed / 42));
 
       for (let i = 0; i < bars; i += 1) {
         const angle = (Math.PI * 2 * i) / bars;
@@ -115,7 +115,7 @@ export function CanvasVisualizer({
     render();
 
     return () => window.cancelAnimationFrame(animationId);
-  }, [accent, density, intensity, isPlaying, motion]);
+  }, [accent, density, intensity, isPlaying, speed]);
 
   return <canvas className="h-full w-full" ref={canvasRef} />;
 }

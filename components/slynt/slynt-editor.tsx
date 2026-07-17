@@ -1,31 +1,45 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { effects, exportPresets } from "@/data/effects";
-import type { EffectCategory, EffectValues } from "@/types/editor";
+import { effects } from "@/data/effects";
+import type { ControlValues, EffectCategory, ExportValues } from "@/types/editor";
 import { ControlSidebar } from "./control-sidebar";
 import { EffectsBrowser } from "./effects-browser";
 import { PreviewStage } from "./preview-stage";
 import { TopNavigation } from "./top-navigation";
 
 export function SlyntEditor() {
-  const [activeCategory, setActiveCategory] = useState<EffectCategory>("Core");
-  const [selectedEffectId, setSelectedEffectId] = useState(effects[0].id);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [progress, setProgress] = useState(42);
-  const [effectValues, setEffectValues] = useState<EffectValues>({
-    intensity: effects[0].intensity,
-    motion: effects[0].motion,
-    bloom: effects[0].bloom,
-    density: effects[0].density,
+  const [activeCategory, setActiveCategory] =
+    useState<EffectCategory>("background");
+  const [selectedBackground, setSelectedBackground] = useState("nebula");
+  const [selectedVisualizer, setSelectedVisualizer] = useState("spectrum");
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(67);
+  const [duration] = useState(204);
+  const [volume] = useState(70);
+  const [controlValues, setControlValues] = useState<ControlValues>({
+    intensity: 75,
+    sensitivity: 65,
+    barHeight: 80,
+    speed: 58,
+    smoothing: 70,
+    density: 60,
+    glowEnabled: true,
+    glowIntensity: 60,
+    glowBlur: 28,
   });
-  const [exportPreset, setExportPreset] = useState(exportPresets[1]);
+  const [exportValues, setExportValues] = useState<ExportValues>({
+    resolution: "1280 × 720 (HD)",
+    frameRate: "30 FPS",
+    aspectRatio: "16:9",
+  });
   const [transparent, setTransparent] = useState(false);
   const [loop, setLoop] = useState(true);
 
   const selectedEffect = useMemo(
-    () => effects.find((effect) => effect.id === selectedEffectId) ?? effects[0],
-    [selectedEffectId],
+    () =>
+      effects.find((effect) => effect.id === selectedVisualizer) ?? effects[0],
+    [selectedVisualizer],
   );
 
   const filteredEffects = useMemo(
@@ -39,11 +53,11 @@ export function SlyntEditor() {
     }
 
     const interval = window.setInterval(() => {
-      setProgress((current) => (current >= 100 ? 0 : current + 0.35));
+      setCurrentTime((current) => (current >= duration ? 0 : current + 1));
     }, 120);
 
     return () => window.clearInterval(interval);
-  }, [isPlaying]);
+  }, [duration, isPlaying]);
 
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--text-primary)]">
@@ -53,41 +67,46 @@ export function SlyntEditor() {
         <section className="grid flex-1 gap-4 py-4 xl:grid-cols-[minmax(0,1fr)_390px] lg:grid-cols-[minmax(0,1fr)_350px]">
           <div className="flex min-w-0 flex-col gap-4">
             <PreviewStage
+              currentTime={currentTime}
+              duration={duration}
               effect={selectedEffect}
-              effectValues={effectValues}
+              controlValues={controlValues}
               isPlaying={isPlaying}
               loop={loop}
-              progress={progress}
               setIsPlaying={setIsPlaying}
               setLoop={setLoop}
-              setProgress={setProgress}
+              setCurrentTime={setCurrentTime}
+              selectedBackground={selectedBackground}
+              selectedVisualizer={selectedVisualizer}
+              volume={volume}
             />
 
             <EffectsBrowser
               activeCategory={activeCategory}
               effects={filteredEffects}
-              selectedEffectId={selectedEffectId}
+              selectedEffectId={
+                activeCategory === "background"
+                  ? selectedBackground
+                  : selectedVisualizer
+              }
               setActiveCategory={setActiveCategory}
               setSelectedEffect={(effect) => {
-                setSelectedEffectId(effect.id);
-                setEffectValues({
-                  intensity: effect.intensity,
-                  motion: effect.motion,
-                  bloom: effect.bloom,
-                  density: effect.density,
-                });
+                if (effect.category === "background") {
+                  setSelectedBackground(effect.id);
+                  return;
+                }
+
+                setSelectedVisualizer(effect.id);
               }}
             />
           </div>
 
           <ControlSidebar
+            controlValues={controlValues}
             effect={selectedEffect}
-            effectValues={effectValues}
-            exportPreset={exportPreset}
-            loop={loop}
-            setEffectValues={setEffectValues}
-            setExportPreset={setExportPreset}
-            setLoop={setLoop}
+            exportValues={exportValues}
+            setControlValues={setControlValues}
+            setExportValues={setExportValues}
             setTransparent={setTransparent}
             transparent={transparent}
           />

@@ -1,28 +1,36 @@
 import { Clock3, Maximize2 } from "lucide-react";
-import type { Effect, EffectValues, Icon } from "@/types/editor";
+import type { ControlValues, Effect, Icon } from "@/types/editor";
 import { CanvasVisualizer } from "./canvas-visualizer";
 import { PlaybackControls } from "./playback-controls";
 
 type PreviewStageProps = {
+  currentTime: number;
+  duration: number;
   effect: Effect;
-  effectValues: EffectValues;
+  controlValues: ControlValues;
   isPlaying: boolean;
   loop: boolean;
-  progress: number;
   setIsPlaying: (value: boolean) => void;
   setLoop: (value: boolean) => void;
-  setProgress: (value: number) => void;
+  setCurrentTime: (value: number) => void;
+  selectedBackground: string;
+  selectedVisualizer: string;
+  volume: number;
 };
 
 export function PreviewStage({
+  currentTime,
+  duration,
   effect,
-  effectValues,
+  controlValues,
   isPlaying,
   loop,
-  progress,
   setIsPlaying,
   setLoop,
-  setProgress,
+  setCurrentTime,
+  selectedBackground,
+  selectedVisualizer,
+  volume,
 }: PreviewStageProps) {
   return (
     <section className="overflow-hidden rounded-[10px] border border-[var(--border)] bg-[var(--surface)]">
@@ -45,10 +53,10 @@ export function PreviewStage({
         <div className="relative aspect-video overflow-hidden rounded-[10px] border border-[var(--border-subtle)] bg-black">
           <CanvasVisualizer
             accent={effect.accent}
-            density={effectValues.density}
-            intensity={effectValues.intensity}
+            density={controlValues.density}
+            intensity={controlValues.intensity}
             isPlaying={isPlaying}
-            motion={effectValues.motion}
+            speed={controlValues.speed}
           />
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(139,92,246,0.11),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.03),transparent_18%,rgba(0,0,0,0.36))]" />
           <div className="absolute left-4 top-4 flex items-center gap-2 rounded-[7px] border border-white/10 bg-black/50 px-2.5 py-1.5 text-xs text-[var(--text-secondary)]">
@@ -64,13 +72,20 @@ export function PreviewStage({
                 <p className="mt-1 text-xl font-semibold text-white sm:text-3xl">
                   {effect.name}
                 </p>
+                <p className="mt-1 text-xs text-zinc-500">
+                  {selectedBackground} / {selectedVisualizer}
+                </p>
               </div>
               <div className="hidden text-right sm:block">
                 <p className="text-xs text-zinc-500">Peak</p>
                 <p className="font-mono text-sm text-[var(--cyan)]">-3.1 dB</p>
               </div>
             </div>
-            <Timeline progress={progress} setProgress={setProgress} />
+            <Timeline
+              currentTime={currentTime}
+              duration={duration}
+              setCurrentTime={setCurrentTime}
+            />
           </div>
         </div>
       </div>
@@ -81,6 +96,7 @@ export function PreviewStage({
           loop={loop}
           setIsPlaying={setIsPlaying}
           setLoop={setLoop}
+          volume={volume}
         />
 
         <div className="grid grid-cols-3 gap-2 text-xs text-[var(--text-secondary)] sm:flex sm:items-center">
@@ -94,29 +110,39 @@ export function PreviewStage({
 }
 
 function Timeline({
-  progress,
-  setProgress,
+  currentTime,
+  duration,
+  setCurrentTime,
 }: {
-  progress: number;
-  setProgress: (value: number) => void;
+  currentTime: number;
+  duration: number;
+  setCurrentTime: (value: number) => void;
 }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="w-10 font-mono text-xs text-zinc-400">01:34</span>
+      <span className="w-10 font-mono text-xs text-zinc-400">
+        {formatTime(currentTime)}
+      </span>
       <input
         aria-label="Playback position"
         className="slynt-range flex-1"
-        max="100"
+        max={duration}
         min="0"
-        onChange={(event) => setProgress(Number(event.target.value))}
+        onChange={(event) => setCurrentTime(Number(event.target.value))}
         type="range"
-        value={progress}
+        value={currentTime}
       />
       <span className="w-10 text-right font-mono text-xs text-zinc-400">
-        03:42
+        {formatTime(duration)}
       </span>
     </div>
   );
+}
+
+function formatTime(time: number) {
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
 
 function IconButton({ icon: IconComponent, label }: { icon: Icon; label: string }) {
