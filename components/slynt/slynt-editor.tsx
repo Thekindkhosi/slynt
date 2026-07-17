@@ -111,11 +111,7 @@ export function SlyntEditor() {
 
         <section className="grid flex-1 grid-cols-1 gap-4 py-4 lg:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[minmax(0,1fr)_390px]">
           <div className="flex min-w-0 flex-col gap-4">
-            <PreviewStage
-              audioTrack={audioTrack}
-              controlValues={controlValues}
-              isPlaying={isPlaying}
-            />
+            <PreviewStage />
 
             <PlaybackControls
               audioTrack={audioTrack}
