@@ -32,10 +32,8 @@ export function PreviewStage({
       <div className="p-3 sm:p-4">
         <div className="relative aspect-video overflow-hidden rounded-[10px] border border-[var(--border-subtle)] bg-black">
           <CanvasVisualizer
-            density={controlValues.density}
-            intensity={controlValues.intensity}
+            controlValues={controlValues}
             isPlaying={isPlaying}
-            speed={controlValues.speed}
           />
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.025),transparent_18%,rgba(0,0,0,0.28))]" />
 
