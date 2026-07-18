@@ -80,20 +80,29 @@ function ThumbnailShape({ effect }: { effect: Effect }) {
 
   if (effect.category === "audio-reactives") {
     return (
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="relative h-16 w-16 rounded-full border border-white/40">
-          {Array.from({ length: 18 }, (_, index) => (
-            <span
-              className="absolute left-1/2 top-1/2 h-6 w-px origin-bottom rounded-full bg-[var(--accent)]"
-              key={index}
-              style={{
-                backgroundColor: index < 9 ? "#ffffff" : "#9f9f9a",
-                transform: `rotate(${index * 20}deg) translateY(-34px)`,
-              }}
-            />
-          ))}
+      <div className="absolute inset-4 flex items-end gap-1.5">
+        {Array.from({ length: 12 }, (_, column) => {
+          const activeRows =
+            2 + Math.round(Math.abs(Math.sin(column * 0.72)) * 5);
+          return (
+            <div className="grid flex-1 grid-rows-7 gap-1" key={column}>
+              {Array.from({ length: 7 }, (_, row) => {
+                const active = 6 - row < activeRows;
+                return (
+                  <span
+                    className={cn(
+                      "rounded-[2px] border border-white/10",
+                      active ? "bg-white/70 shadow-[0_0_10px_rgba(255,255,255,0.22)]" : "bg-white/8",
+                    )}
+                    key={row}
+                  />
+                );
+              })}
+            </div>
+          );
+        })}
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.16)_1px,transparent_1px),linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[length:18px_18px]" />
         </div>
-      </div>
     );
   }
 
