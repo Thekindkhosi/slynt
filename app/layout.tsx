@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SLYNT Audio Visualizer Editor",
-  description: "A matte-black web-based audio visualizer editor.",
+  title: "SLYNT Editorial Audio Visualizer",
+  description: "A monochrome broadcast-style visualizer for electronic music.",
 };
 
 export default function RootLayout({

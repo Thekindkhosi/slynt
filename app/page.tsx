@@ -1,5 +1,5 @@
-import { SlyntEditor } from "@/components/slynt/slynt-editor";
+import { EditorialAudioVisualizer } from "@/components/slynt/editorial-audio-visualizer";
 
 export default function Page() {
-  return <SlyntEditor />;
+  return <EditorialAudioVisualizer />;
 }
