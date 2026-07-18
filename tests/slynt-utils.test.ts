@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import { mkdtemp, rm } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import {
   isSafeAssetId,
   mapRenderResolution,
@@ -12,6 +15,7 @@ import {
   getNextChapter,
   parseClockTime,
 } from "../lib/slynt/time";
+import { getAssetRecord, saveUploadedAsset } from "../lib/slynt/storage";
 
 assert.equal(formatTime(65), "1:05");
 assert.equal(formatTime(3661), "1:01:01");
@@ -45,5 +49,39 @@ assert.equal(
   true,
 );
 
-console.log("slynt utility tests passed");
+runStorageTests()
+  .then(() => {
+    console.log("slynt utility tests passed");
+  })
+  .catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
 
+async function runStorageTests() {
+  const originalDataDir = process.env.SLYNT_DATA_DIR;
+  const tempDataDir = await mkdtemp(path.join(os.tmpdir(), "slynt-test-"));
+  process.env.SLYNT_DATA_DIR = tempDataDir;
+
+  try {
+    const asset = await saveUploadedAsset(
+      new File([Buffer.from("fake audio")], "fixture.mp3", {
+        type: "audio/mpeg",
+      }),
+    );
+    const record = await getAssetRecord(asset.id);
+
+    assert.equal(record?.id, asset.id);
+    assert.equal(record?.fileName, "fixture.mp3");
+    assert.equal(record?.mimeType, "audio/mpeg");
+    assert.equal(record?.stats.size, 10);
+  } finally {
+    if (originalDataDir === undefined) {
+      delete process.env.SLYNT_DATA_DIR;
+    } else {
+      process.env.SLYNT_DATA_DIR = originalDataDir;
+    }
+
+    await rm(tempDataDir, { force: true, recursive: true });
+  }
+}

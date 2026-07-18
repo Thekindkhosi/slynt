@@ -55,28 +55,28 @@ export function createDefaultProject(): SlyntProject {
         scale: 1,
       },
       gradient: {
-        activeStopId: "violet-core",
+        activeStopId: "white-core",
         stops: [
           {
-            id: "violet-core",
+            id: "white-core",
             blur: 18,
-            color: "#8b5cf6",
+            color: "#f5f5f0",
             positionX: 42,
             positionY: 38,
             size: 52,
           },
           {
-            id: "cyan-edge",
+            id: "silver-edge",
             blur: 22,
-            color: "#38bdf8",
+            color: "#9f9f9a",
             positionX: 70,
             positionY: 62,
             size: 36,
           },
           {
-            id: "green-floor",
+            id: "graphite-floor",
             blur: 26,
-            color: "#22c55e",
+            color: "#4f4f4c",
             positionX: 22,
             positionY: 76,
             size: 28,
@@ -128,4 +128,3 @@ export function createDefaultProject(): SlyntProject {
     },
   };
 }
-

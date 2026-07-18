@@ -40,9 +40,9 @@ export function PlaybackControls({
   const durationInFrames = Math.max(1, Math.ceil(duration * fps));
   const currentTime = currentFrame / fps;
   const progress = Math.min(100, (currentFrame / Math.max(1, durationInFrames - 1)) * 100);
-  const seekBackground = `linear-gradient(90deg, var(--accent) 0%, var(--accent) ${progress}%, #1b1b22 ${progress}%, #1b1b22 100%)`;
+  const seekBackground = `linear-gradient(90deg, var(--accent) 0%, var(--accent) ${progress}%, #242424 ${progress}%, #242424 100%)`;
   const volumeValue = Math.round(project.audio.volume * 100);
-  const volumeBackground = `linear-gradient(90deg, var(--accent) 0%, var(--accent) ${volumeValue}%, #1b1b22 ${volumeValue}%, #1b1b22 100%)`;
+  const volumeBackground = `linear-gradient(90deg, var(--accent) 0%, var(--accent) ${volumeValue}%, #242424 ${volumeValue}%, #242424 100%)`;
 
   useEffect(() => {
     const player = playerRef.current;
@@ -84,7 +84,7 @@ export function PlaybackControls({
   };
 
   return (
-    <section className="flex w-full flex-col gap-3 rounded-[10px] border border-[var(--border)] bg-[var(--surface)] p-3 sm:p-4">
+    <section className="slynt-panel flex w-full flex-col gap-3 p-3 sm:p-4">
       <div className="flex flex-wrap items-center gap-2">
         <IconButton icon={StepBack} label="Back 10 seconds" onClick={() => seekTo(currentFrame - fps * 10)} />
         <button
@@ -153,7 +153,7 @@ function IconButton({
   return (
     <button
       aria-label={label}
-      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] text-[var(--text-secondary)] transition hover:border-[var(--accent)] hover:text-white"
+      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] text-[var(--text-secondary)] transition hover:border-white/55 hover:text-white"
       onClick={onClick}
       title={label}
       type="button"
@@ -162,4 +162,3 @@ function IconButton({
     </button>
   );
 }
-

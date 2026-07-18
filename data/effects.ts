@@ -27,7 +27,7 @@ export const categories: EffectCategory[] = [
 ];
 
 const defaults = {
-  accent: "#8b5cf6",
+  accent: "#f5f5f0",
   density: 60,
   glowIntensity: 40,
   intensity: 60,
@@ -42,7 +42,7 @@ export const effects: Effect[] = [
     category: "background",
     description: "Upload and edit a custom background image.",
     icon: Image,
-    accent: "#38bdf8",
+    accent: "#d8d8d2",
   },
   {
     ...defaults,
@@ -60,7 +60,7 @@ export const effects: Effect[] = [
     category: "audio-reactives",
     description: "Classic radial bars with controlled low-end lift.",
     icon: AudioLines,
-    accent: "#38bdf8",
+    accent: "#f5f5f0",
     intensity: 75,
   },
   {
@@ -70,7 +70,7 @@ export const effects: Effect[] = [
     category: "audio-reactives",
     description: "Circular analyzer with smooth phase rotation.",
     icon: Circle,
-    accent: "#8b5cf6",
+    accent: "#f5f5f0",
   },
   {
     ...defaults,
@@ -79,7 +79,7 @@ export const effects: Effect[] = [
     category: "audio-reactives",
     description: "Centered waveform ribbon tuned for vocals.",
     icon: Activity,
-    accent: "#38bdf8",
+    accent: "#d8d8d2",
   },
   {
     ...defaults,
@@ -106,7 +106,7 @@ export const effects: Effect[] = [
     category: "audio-reactives",
     description: "Thin frequency ring with refined transient motion.",
     icon: Circle,
-    accent: "#38bdf8",
+    accent: "#d8d8d2",
   },
   {
     ...defaults,

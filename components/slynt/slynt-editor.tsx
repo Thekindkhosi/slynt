@@ -284,8 +284,9 @@ export function SlyntEditor() {
   };
 
   return (
-    <main className="min-h-screen bg-[var(--background)] text-[var(--text-primary)]">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1720px] flex-col px-3 py-3 sm:px-5 lg:px-6 xl:px-8">
+    <main className="min-h-screen bg-transparent text-[var(--text-primary)]">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_82%_12%,rgba(255,255,255,0.08),transparent_23rem),linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.05)_48%,transparent_49%)]" />
+      <div className="relative mx-auto flex min-h-screen w-full max-w-[1720px] flex-col px-3 py-3 sm:px-5 lg:px-6 xl:px-8">
         <TopNavigation
           analyzing={analyzing}
           exportState={exportState}
@@ -295,7 +296,7 @@ export function SlyntEditor() {
         />
 
         {notice ? (
-          <div className="mt-3 rounded-[8px] border border-red-500/25 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+          <div className="mt-3 rounded-[8px] border border-white/25 bg-white/10 px-4 py-3 text-sm text-white">
             {notice}
           </div>
         ) : null}

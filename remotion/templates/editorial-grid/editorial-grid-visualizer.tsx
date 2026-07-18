@@ -30,7 +30,7 @@ export function EditorialGridVisualizer({
         <defs>
           <filter id="editorialGlow">
             <feGaussianBlur stdDeviation={project.visualizer.glowBlur / 8} />
-            <feColorMatrix values={`1 0 0 0 0.2  0 1 0 0 0.7  0 0 1 0 1  0 0 0 ${project.visualizer.glowIntensity} 0`} />
+            <feColorMatrix values={`1 0 0 0 0.82  0 1 0 0 0.82  0 0 1 0 0.8  0 0 0 ${project.visualizer.glowIntensity} 0`} />
             <feMerge>
               <feMergeNode />
               <feMergeNode in="SourceGraphic" />
@@ -45,11 +45,10 @@ export function EditorialGridVisualizer({
           const y1 = centerY + Math.sin(angle) * baseRadius;
           const x2 = centerX + Math.cos(angle) * (baseRadius + length);
           const y2 = centerY + Math.sin(angle) * (baseRadius + length);
-          return <line key={index} stroke={index % 3 === 0 ? "#38bdf8" : "#ffffff"} strokeLinecap="round" strokeOpacity={0.55 + sample * 0.45} strokeWidth={project.visualizer.lineWidth} x1={x1} x2={x2} y1={y1} y2={y2} />;
+          return <line key={index} stroke={index % 3 === 0 ? "#f5f5f0" : "#ffffff"} strokeLinecap="round" strokeOpacity={0.55 + sample * 0.45} strokeWidth={project.visualizer.lineWidth} x1={x1} x2={x2} y1={y1} y2={y2} />;
         })}
       </g>
       <circle cx={centerX} cy={centerY} fill="rgba(255,255,255,0.04)" r={baseRadius * (1 + data.bass * 0.18)} stroke="rgba(255,255,255,0.36)" strokeWidth="1.5" />
     </svg>
   );
 }
-

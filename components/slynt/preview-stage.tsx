@@ -19,9 +19,9 @@ export const PreviewStage = forwardRef<PlayerRef, PreviewStageProps>(
     );
 
     return (
-      <section className="overflow-hidden rounded-[10px] border border-[var(--border)] bg-[var(--surface)]">
+      <section className="slynt-panel overflow-hidden">
         <div className="p-2 sm:p-3 xl:p-4">
-          <div className="relative aspect-video overflow-hidden rounded-[10px] border border-[var(--border-subtle)] bg-[#050506]">
+          <div className="relative aspect-video overflow-hidden rounded-[8px] border border-[var(--border-subtle)] bg-[#020203] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]">
             <Player
               acknowledgeRemotionLicense
               clickToPlay={false}
@@ -43,4 +43,3 @@ export const PreviewStage = forwardRef<PlayerRef, PreviewStageProps>(
     );
   },
 );
-

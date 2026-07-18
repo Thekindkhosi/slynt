@@ -114,7 +114,9 @@ export async function getAssetRecord(assetId: string) {
 
   const assetsDir = getAssetsDir();
   const entries = await readdir(assetsDir).catch(() => []);
-  const metadataName = entries.find((entry) => entry === `${assetId}.json`);
+  const metadataName = entries.find(
+    (entry) => entry.startsWith(`${assetId}.`) && entry.endsWith(".json"),
+  );
 
   if (!metadataName) {
     return null;

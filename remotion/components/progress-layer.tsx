@@ -24,7 +24,7 @@ export function ProgressLayer({ project }: { project: SlyntProject }) {
       {project.progress.showChapterMarkers
         ? project.playlist.chapters.map((chapter) => {
             const x = 74 + (width - 148) * (chapter.startTimeSeconds / Math.max(1, project.canvas.durationInSeconds));
-            return <line key={chapter.id} stroke="rgba(56,189,248,0.8)" strokeWidth="2" x1={x} x2={x} y1={barY - 8} y2={barY + 8} />;
+            return <line key={chapter.id} stroke="rgba(245,245,240,0.8)" strokeWidth="2" x1={x} x2={x} y1={barY - 8} y2={barY + 8} />;
           })
         : null}
       {project.progress.style === "segmented-timeline"
@@ -47,4 +47,3 @@ export function ProgressLayer({ project }: { project: SlyntProject }) {
     </svg>
   );
 }
-

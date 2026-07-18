@@ -53,7 +53,7 @@ export function ExportSettings({
         value={exportValues.quality}
       />
       <button
-        className="flex h-11 w-full items-center justify-center gap-2 rounded-[7px] bg-[var(--accent)] text-sm font-semibold text-white transition hover:bg-[var(--accent-hover)]"
+        className="flex h-11 w-full items-center justify-center gap-2 rounded-[7px] bg-white text-sm font-semibold text-black transition hover:bg-zinc-200"
         type="button"
       >
         <Download className="h-4 w-4" />

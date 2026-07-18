@@ -41,12 +41,12 @@ export function TopNavigation({
   };
 
   return (
-    <header className="relative flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] py-1">
+    <header className="relative flex min-h-16 flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] py-2">
       <div className="flex items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)]">
-          <Waves className="h-4 w-4 text-[var(--accent)]" strokeWidth={2.2} />
+        <div className="flex h-9 w-9 items-center justify-center rounded-[7px] border border-[var(--border)] bg-[linear-gradient(145deg,rgba(255,255,255,0.16),rgba(255,255,255,0.02))] shadow-[0_0_28px_rgba(255,255,255,0.08)]">
+          <Waves className="h-4 w-4 text-white" strokeWidth={2.2} />
         </div>
-        <h1 className="text-[22px] font-semibold leading-none tracking-[0.22em] text-white sm:text-[24px]">
+        <h1 className="text-[22px] font-semibold leading-none tracking-[0.28em] text-white sm:text-[24px]">
           SLYNT
         </h1>
       </div>
@@ -61,15 +61,15 @@ export function TopNavigation({
         />
         <button
           aria-label="Add audio"
-          className="flex h-10 min-w-10 max-w-[220px] items-center justify-center gap-2 rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] px-3 text-[13px] font-semibold text-[var(--text-primary)] transition hover:border-[var(--accent)] hover:bg-[var(--surface-hover)]"
+          className="flex h-10 min-w-10 max-w-[220px] items-center justify-center gap-2 rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] px-3 text-[13px] font-semibold text-[var(--text-primary)] transition hover:border-white/55 hover:bg-[var(--surface-hover)]"
           onClick={() => audioInputRef.current?.click()}
           title={project.audio.asset?.fileName ?? "Add audio"}
           type="button"
         >
           {project.audio.asset ? (
-            <Music className="h-3.5 w-3.5 text-[var(--success)]" />
+            <Music className="h-3.5 w-3.5 text-white" />
           ) : (
-            <Upload className="h-3.5 w-3.5 text-[var(--accent)]" />
+            <Upload className="h-3.5 w-3.5 text-white" />
           )}
           <span className="hidden truncate sm:inline">
             {analyzing
@@ -83,7 +83,7 @@ export function TopNavigation({
             aria-expanded={exportOpen}
             aria-haspopup="dialog"
             aria-label="Export video"
-            className="flex h-10 items-center gap-2 rounded-[7px] bg-[var(--accent)] px-3 text-[13px] font-semibold text-white transition hover:bg-[var(--accent-hover)]"
+            className="flex h-10 items-center gap-2 rounded-[7px] border border-white/70 bg-white px-3 text-[13px] font-semibold text-black transition hover:bg-zinc-200"
             onClick={() => setExportOpen((open) => !open)}
             type="button"
           >
@@ -93,7 +93,7 @@ export function TopNavigation({
           </button>
 
           {exportOpen ? (
-            <div className="absolute right-0 top-11 z-20 w-[calc(100vw-1.5rem)] rounded-[8px] border border-[var(--border)] bg-[var(--surface)] p-4 shadow-lg shadow-black/20 sm:w-80">
+            <div className="absolute right-0 top-11 z-20 w-[calc(100vw-1.5rem)] rounded-[8px] border border-[var(--border)] bg-[rgba(9,9,10,0.96)] p-4 shadow-2xl shadow-black/50 backdrop-blur-xl sm:w-80">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">
                 Export
               </p>
@@ -117,12 +117,12 @@ export function TopNavigation({
                   <span>{Math.round(exportState.progress * 100)}%</span>
                 </div>
                 {exportState.error ? (
-                  <p className="text-xs text-red-300">{exportState.error}</p>
+                  <p className="text-xs text-white">{exportState.error}</p>
                 ) : null}
               </div>
 
               <button
-                className="mt-4 flex h-9 w-full items-center justify-center gap-2 rounded-[7px] bg-[var(--accent)] text-xs font-semibold text-white transition hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                className="mt-4 flex h-9 w-full items-center justify-center gap-2 rounded-[7px] bg-white text-xs font-semibold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
                 disabled={!exportState.canExport}
                 onClick={onExport}
                 type="button"
@@ -154,4 +154,3 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
-

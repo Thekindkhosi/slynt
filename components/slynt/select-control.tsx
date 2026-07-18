@@ -25,7 +25,7 @@ export function SelectControl({
       </label>
       <div className="relative">
         <select
-          className="h-10 w-full appearance-none rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] px-3 text-sm text-white outline-none transition focus:border-[var(--accent)]"
+          className="h-10 w-full appearance-none rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] px-3 text-sm text-white outline-none transition focus:border-white/70"
           id={selectId}
           onChange={(event) => onChange(event.target.value)}
           value={value}

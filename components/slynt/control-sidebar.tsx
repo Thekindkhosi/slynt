@@ -24,7 +24,7 @@ export function ControlSidebar({
   setProject,
 }: ControlSidebarProps) {
   return (
-    <aside className="flex min-h-0 flex-col rounded-[10px] border border-[var(--border)] bg-[var(--surface)] lg:sticky lg:top-[84px] lg:max-h-[calc(100vh-100px)]">
+    <aside className="slynt-panel flex min-h-0 flex-col lg:sticky lg:top-[84px] lg:max-h-[calc(100vh-100px)]">
       <div className="border-b border-[var(--border-subtle)] px-4 py-4">
         <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">
           Controls
@@ -77,7 +77,7 @@ function BackgroundControls({
       </ControlSection>
       <ControlSection icon={Upload} title="Image">
         <AssetInput inputRef={inputRef} onChange={(file) => onAssetUpload(file, "background")} />
-        <button className="flex h-11 w-full items-center justify-center gap-2 rounded-[7px] border border-[var(--border)] bg-[#070709] text-sm font-medium text-white transition hover:border-[var(--accent)]" onClick={() => inputRef.current?.click()} type="button">
+        <button className="flex h-11 w-full items-center justify-center gap-2 rounded-[7px] border border-[var(--border)] bg-[#070707] text-sm font-medium text-white transition hover:border-white/55" onClick={() => inputRef.current?.click()} type="button">
           <Upload className="h-4 w-4" />
           Upload background
         </button>
@@ -162,7 +162,7 @@ function CoverControls({ onAssetUpload, project, setProject }: ControlSidebarPro
     <>
       <ControlSection icon={Upload} title="Cover">
         <AssetInput inputRef={inputRef} onChange={(file) => onAssetUpload(file, "cover")} />
-        <button className="flex h-11 w-full items-center justify-center gap-2 rounded-[7px] border border-[var(--border)] bg-[#070709] text-sm font-medium text-white transition hover:border-[var(--accent)]" onClick={() => inputRef.current?.click()} type="button">
+        <button className="flex h-11 w-full items-center justify-center gap-2 rounded-[7px] border border-[var(--border)] bg-[#070707] text-sm font-medium text-white transition hover:border-white/55" onClick={() => inputRef.current?.click()} type="button">
           <Upload className="h-4 w-4" /> Upload cover
         </button>
         {project.track.cover ? <button className="mt-2 flex h-9 w-full items-center justify-center gap-2 rounded-[7px] border border-[var(--border)] text-xs text-white" onClick={() => setProject({ ...project, track: { ...project.track, cover: null } })} type="button"><X className="h-3.5 w-3.5" /> Remove cover</button> : null}
@@ -193,7 +193,7 @@ function LogoControls({ onAssetUpload, project, selectedEffectId, setProject }: 
     <>
       <ControlSection icon={Upload} title="Logo">
         <AssetInput inputRef={inputRef} onChange={(file) => onAssetUpload(file, "logo")} />
-        <button className="flex h-11 w-full items-center justify-center gap-2 rounded-[7px] border border-[var(--border)] bg-[#070709] text-sm font-medium text-white transition hover:border-[var(--accent)]" onClick={() => inputRef.current?.click()} type="button"><Upload className="h-4 w-4" /> Upload logo</button>
+        <button className="flex h-11 w-full items-center justify-center gap-2 rounded-[7px] border border-[var(--border)] bg-[#070707] text-sm font-medium text-white transition hover:border-white/55" onClick={() => inputRef.current?.click()} type="button"><Upload className="h-4 w-4" /> Upload logo</button>
       </ControlSection>
       <ControlSection icon={Image} title="Placement">
         <SelectControl label="Placement" onChange={(value) => setProject({ ...project, logo: { ...project.logo, placement: value as SlyntProject["logo"]["placement"] } })} options={["hidden", "center", "bottom-left", "bottom-right", "watermark"]} value={project.logo.placement === placement ? project.logo.placement : placement} />
@@ -222,7 +222,7 @@ function TextInput({ label, onChange, value }: { label: string; onChange: (value
   return (
     <label className="mb-3 block text-xs text-[var(--text-secondary)]" htmlFor={id}>
       {label}
-      <input className="mt-2 h-10 w-full rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] px-3 text-sm text-white outline-none focus:border-[var(--accent)]" id={id} onChange={(event) => onChange(event.target.value)} value={value} />
+      <input className="mt-2 h-10 w-full rounded-[7px] border border-[var(--border)] bg-[var(--surface-secondary)] px-3 text-sm text-white outline-none focus:border-white/70" id={id} onChange={(event) => onChange(event.target.value)} value={value} />
     </label>
   );
 }
@@ -251,4 +251,3 @@ function normalizeLogoPlacement(effectId: string): SlyntProject["logo"]["placeme
   };
   return map[effectId] ?? "hidden";
 }
-

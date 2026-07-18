@@ -224,7 +224,7 @@ function drawCircularBars(
     const inner = radius - (effectId === "frequency-ring" ? length * 0.18 : 0);
     const outer = radius + length;
     const sideMix = (Math.cos(angle) + 1) / 2;
-    const color = mixRgb([139, 92, 246], [56, 189, 248], sideMix);
+    const color = mixRgb([245, 245, 240], [150, 150, 146], sideMix);
 
     context.strokeStyle = color;
     context.globalAlpha = 0.2 + energy * 0.72;
@@ -258,7 +258,7 @@ function drawWaveform(
 
   context.save();
   context.lineWidth = 1.8;
-  context.shadowColor = "#38bdf8";
+  context.shadowColor = "#f5f5f0";
   context.shadowBlur = controlValues.glowEnabled
     ? controlValues.glowBlur * (controlValues.glowIntensity / 100)
     : 0;
@@ -266,7 +266,7 @@ function drawWaveform(
   for (let pass = 0; pass < 3; pass += 1) {
     context.beginPath();
     context.strokeStyle =
-      pass === 0 ? "rgba(56,189,248,0.82)" : "rgba(139,92,246,0.32)";
+      pass === 0 ? "rgba(245,245,240,0.82)" : "rgba(150,150,146,0.32)";
     context.globalAlpha = pass === 0 ? 0.9 : 0.34;
 
     for (let index = 0; index < waveformData.length; index += 6) {
@@ -306,7 +306,7 @@ function drawRadialWave(
 
   context.save();
   context.translate(centerX, centerY);
-  context.shadowColor = "#a78bfa";
+  context.shadowColor = "#f5f5f0";
   context.shadowBlur = controlValues.glowEnabled
     ? controlValues.glowBlur * (controlValues.glowIntensity / 120)
     : 0;
@@ -314,7 +314,7 @@ function drawRadialWave(
   for (let ring = 0; ring < 3; ring += 1) {
     context.beginPath();
     context.strokeStyle =
-      ring === 0 ? "rgba(245,245,247,0.68)" : "rgba(56,189,248,0.22)";
+      ring === 0 ? "rgba(245,245,247,0.68)" : "rgba(150,150,146,0.22)";
     context.lineWidth = ring === 0 ? 1.4 : 1;
     context.globalAlpha = 0.8 - ring * 0.2;
 
@@ -386,7 +386,7 @@ function drawParticles(
     const x = centerX + Math.cos(particle.angle) * (beatDistance + wobble);
     const y = centerY + Math.sin(particle.angle) * (beatDistance + wobble);
     const size = 1.2 + pulse * 5.5 * (0.45 + particle.seed);
-    const color = particle.seed > 0.55 ? "#38bdf8" : "#8b5cf6";
+    const color = particle.seed > 0.55 ? "#f5f5f0" : "#9f9f9a";
 
     context.globalAlpha = 0.22 + pulse * 0.58;
     context.fillStyle = color;
@@ -420,8 +420,8 @@ function drawHaze(
     width * (0.22 + bassEnergy * 0.24),
   );
 
-  haze.addColorStop(0, `rgba(139,92,246,${0.1 + pulse * 0.22})`);
-  haze.addColorStop(0.52, `rgba(56,189,248,${0.04 + pulse * 0.12})`);
+  haze.addColorStop(0, `rgba(245,245,240,${0.1 + pulse * 0.22})`);
+  haze.addColorStop(0.52, `rgba(150,150,146,${0.04 + pulse * 0.12})`);
   haze.addColorStop(1, "rgba(5,5,6,0)");
   context.globalAlpha = controlValues.intensity / 100;
   context.fillStyle = haze;

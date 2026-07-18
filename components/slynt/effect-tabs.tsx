@@ -70,7 +70,7 @@ export function EffectTabs({
               className={cn(
                 "relative flex min-h-10 shrink-0 items-center gap-2 rounded-t-[7px] px-3 py-2.5 text-xs font-medium transition",
                 active
-                  ? "bg-[var(--surface-hover)] text-[var(--accent)]"
+                  ? "bg-[var(--surface-hover)] text-white"
                   : "text-[var(--text-muted)] hover:bg-[var(--surface-secondary)] hover:text-[var(--text-secondary)]",
               )}
               key={category}
@@ -81,7 +81,7 @@ export function EffectTabs({
               <IconComponent className="h-4 w-4" />
               {tabMeta[category].label}
               {active ? (
-                <span className="absolute bottom-0 left-3 right-3 h-px bg-[var(--accent)]" />
+                <span className="absolute bottom-0 left-3 right-3 h-px bg-white" />
               ) : null}
             </button>
           );

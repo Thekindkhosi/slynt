@@ -25,7 +25,7 @@ export function WireframeTerrain({ data, project }: { data: ReactiveData; projec
               const perspective = row / rows;
               return `${x},${y - lift * (1.2 - perspective) + perspective * perspective * 130}`;
             }).join(" ");
-            return <polyline fill="none" key={row} points={points} stroke={row % 3 === 0 ? "#38bdf8" : "rgba(255,255,255,0.62)"} strokeWidth="1.4" />;
+            return <polyline fill="none" key={row} points={points} stroke={row % 3 === 0 ? "#f5f5f0" : "rgba(255,255,255,0.62)"} strokeWidth="1.4" />;
           })}
           {Array.from({ length: cols }, (_, col) => {
             const points = Array.from({ length: rows }, (_, row) => {
@@ -40,7 +40,7 @@ export function WireframeTerrain({ data, project }: { data: ReactiveData; projec
             return <polyline fill="none" key={col} opacity="0.36" points={points} stroke="white" strokeWidth="1" />;
           })}
         </g>
-        <circle cx={width * 0.76} cy={height * 0.25} fill="none" r={64 + data.bass * 32} stroke="#38bdf8" strokeOpacity="0.8" strokeWidth="5" />
+        <circle cx={width * 0.76} cy={height * 0.25} fill="none" r={64 + data.bass * 32} stroke="#f5f5f0" strokeOpacity="0.8" strokeWidth="5" />
         <circle cx={width * 0.76} cy={height * 0.25} fill="none" r={92 + data.high * 24} stroke="rgba(255,255,255,0.38)" strokeWidth="2" />
       </svg>
       <TextLayer project={project} />
@@ -49,4 +49,3 @@ export function WireframeTerrain({ data, project }: { data: ReactiveData; projec
     </>
   );
 }
-

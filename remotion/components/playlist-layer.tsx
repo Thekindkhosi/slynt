@@ -42,7 +42,7 @@ export function PlaylistLayer({ project }: { project: SlyntProject }) {
       <div style={{ color: "rgba(255,255,255,0.62)", fontSize: 13, marginTop: 5 }}>{visible.artist}</div>
       {mode.includes("queue")
         ? project.playlist.chapters.slice(0, 5).map((chapter) => (
-            <div key={chapter.id} style={{ borderTop: "1px solid rgba(255,255,255,0.08)", color: chapter.id === current?.id ? "#38bdf8" : "rgba(255,255,255,0.58)", fontSize: 12, marginTop: 10, paddingTop: 8 }}>
+            <div key={chapter.id} style={{ borderTop: "1px solid rgba(255,255,255,0.08)", color: chapter.id === current?.id ? "#f5f5f0" : "rgba(255,255,255,0.58)", fontSize: 12, marginTop: 10, paddingTop: 8 }}>
               {chapter.title}
             </div>
           ))
@@ -50,4 +50,3 @@ export function PlaylistLayer({ project }: { project: SlyntProject }) {
     </div>
   );
 }
-
